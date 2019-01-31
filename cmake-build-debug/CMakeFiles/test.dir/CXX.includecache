@@ -6,21 +6,41 @@
 
 #IncludeRegexTransform: 
 
-/Users/simon/Desktop/test/Lexical.cpp
+/Users/simon/Desktop/test/Simple-C-Compiler/Analyze.cpp
+Analyze.h
+/Users/simon/Desktop/test/Simple-C-Compiler/Analyze.h
+fstream
+-
+iostream
+-
+
+/Users/simon/Desktop/test/Simple-C-Compiler/Analyze.h
 common.h
-/Users/simon/Desktop/test/common.h
+/Users/simon/Desktop/test/Simple-C-Compiler/common.h
 Lexical.h
-/Users/simon/Desktop/test/Lexical.h
+/Users/simon/Desktop/test/Simple-C-Compiler/Lexical.h
 
-/Users/simon/Desktop/test/Lexical.h
+/Users/simon/Desktop/test/Simple-C-Compiler/Lexical.cpp
 common.h
-/Users/simon/Desktop/test/common.h
+/Users/simon/Desktop/test/Simple-C-Compiler/common.h
+Lexical.h
+/Users/simon/Desktop/test/Simple-C-Compiler/Lexical.h
 
-/Users/simon/Desktop/test/common.h
+/Users/simon/Desktop/test/Simple-C-Compiler/Lexical.h
+common.h
+/Users/simon/Desktop/test/Simple-C-Compiler/common.h
+
+/Users/simon/Desktop/test/Simple-C-Compiler/common.h
 string
 -
 vector
 -
 iostream
 -
+
+/Users/simon/Desktop/test/Simple-C-Compiler/main.cpp
+common.h
+/Users/simon/Desktop/test/Simple-C-Compiler/common.h
+Analyze.h
+/Users/simon/Desktop/test/Simple-C-Compiler/Analyze.h
 

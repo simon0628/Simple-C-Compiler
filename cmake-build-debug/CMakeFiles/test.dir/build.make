@@ -43,10 +43,10 @@ RM = /Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/simon/Desktop/test
+CMAKE_SOURCE_DIR = /Users/simon/Desktop/test/Simple-C-Compiler
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/simon/Desktop/test/cmake-build-debug
+CMAKE_BINARY_DIR = /Users/simon/Desktop/test/Simple-C-Compiler/cmake-build-debug
 
 # Include any dependencies generated for this target.
 include CMakeFiles/test.dir/depend.make
@@ -59,42 +59,42 @@ include CMakeFiles/test.dir/flags.make
 
 CMakeFiles/test.dir/main.cpp.o: CMakeFiles/test.dir/flags.make
 CMakeFiles/test.dir/main.cpp.o: ../main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/simon/Desktop/test/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/test.dir/main.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/test.dir/main.cpp.o -c /Users/simon/Desktop/test/main.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/simon/Desktop/test/Simple-C-Compiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/test.dir/main.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/test.dir/main.cpp.o -c /Users/simon/Desktop/test/Simple-C-Compiler/main.cpp
 
 CMakeFiles/test.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/test.dir/main.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/simon/Desktop/test/main.cpp > CMakeFiles/test.dir/main.cpp.i
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/simon/Desktop/test/Simple-C-Compiler/main.cpp > CMakeFiles/test.dir/main.cpp.i
 
 CMakeFiles/test.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test.dir/main.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/simon/Desktop/test/main.cpp -o CMakeFiles/test.dir/main.cpp.s
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/simon/Desktop/test/Simple-C-Compiler/main.cpp -o CMakeFiles/test.dir/main.cpp.s
 
 CMakeFiles/test.dir/Analyze.cpp.o: CMakeFiles/test.dir/flags.make
 CMakeFiles/test.dir/Analyze.cpp.o: ../Analyze.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/simon/Desktop/test/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/test.dir/Analyze.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/test.dir/Analyze.cpp.o -c /Users/simon/Desktop/test/Analyze.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/simon/Desktop/test/Simple-C-Compiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/test.dir/Analyze.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/test.dir/Analyze.cpp.o -c /Users/simon/Desktop/test/Simple-C-Compiler/Analyze.cpp
 
 CMakeFiles/test.dir/Analyze.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/test.dir/Analyze.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/simon/Desktop/test/Analyze.cpp > CMakeFiles/test.dir/Analyze.cpp.i
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/simon/Desktop/test/Simple-C-Compiler/Analyze.cpp > CMakeFiles/test.dir/Analyze.cpp.i
 
 CMakeFiles/test.dir/Analyze.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test.dir/Analyze.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/simon/Desktop/test/Analyze.cpp -o CMakeFiles/test.dir/Analyze.cpp.s
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/simon/Desktop/test/Simple-C-Compiler/Analyze.cpp -o CMakeFiles/test.dir/Analyze.cpp.s
 
 CMakeFiles/test.dir/Lexical.cpp.o: CMakeFiles/test.dir/flags.make
 CMakeFiles/test.dir/Lexical.cpp.o: ../Lexical.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/simon/Desktop/test/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/test.dir/Lexical.cpp.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/test.dir/Lexical.cpp.o -c /Users/simon/Desktop/test/Lexical.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/simon/Desktop/test/Simple-C-Compiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/test.dir/Lexical.cpp.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/test.dir/Lexical.cpp.o -c /Users/simon/Desktop/test/Simple-C-Compiler/Lexical.cpp
 
 CMakeFiles/test.dir/Lexical.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/test.dir/Lexical.cpp.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/simon/Desktop/test/Lexical.cpp > CMakeFiles/test.dir/Lexical.cpp.i
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/simon/Desktop/test/Simple-C-Compiler/Lexical.cpp > CMakeFiles/test.dir/Lexical.cpp.i
 
 CMakeFiles/test.dir/Lexical.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/test.dir/Lexical.cpp.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/simon/Desktop/test/Lexical.cpp -o CMakeFiles/test.dir/Lexical.cpp.s
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/simon/Desktop/test/Simple-C-Compiler/Lexical.cpp -o CMakeFiles/test.dir/Lexical.cpp.s
 
 # Object files for target test
 test_OBJECTS = \
@@ -110,7 +110,7 @@ test: CMakeFiles/test.dir/Analyze.cpp.o
 test: CMakeFiles/test.dir/Lexical.cpp.o
 test: CMakeFiles/test.dir/build.make
 test: CMakeFiles/test.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/simon/Desktop/test/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/Users/simon/Desktop/test/Simple-C-Compiler/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX executable test"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/test.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -123,6 +123,6 @@ CMakeFiles/test.dir/clean:
 .PHONY : CMakeFiles/test.dir/clean
 
 CMakeFiles/test.dir/depend:
-	cd /Users/simon/Desktop/test/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/simon/Desktop/test /Users/simon/Desktop/test /Users/simon/Desktop/test/cmake-build-debug /Users/simon/Desktop/test/cmake-build-debug /Users/simon/Desktop/test/cmake-build-debug/CMakeFiles/test.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/simon/Desktop/test/Simple-C-Compiler/cmake-build-debug && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/simon/Desktop/test/Simple-C-Compiler /Users/simon/Desktop/test/Simple-C-Compiler /Users/simon/Desktop/test/Simple-C-Compiler/cmake-build-debug /Users/simon/Desktop/test/Simple-C-Compiler/cmake-build-debug /Users/simon/Desktop/test/Simple-C-Compiler/cmake-build-debug/CMakeFiles/test.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/test.dir/depend
 
