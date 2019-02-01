@@ -1,9 +1,8 @@
 #include "Analyze.h"
-#include <fstream>
 #include <iostream>
 using namespace std;
 
-Analyze::Analyze(char *filename)
+Analyze::Analyze(const string filename)
 {
     source_code = read_file(filename);
 
@@ -12,26 +11,6 @@ Analyze::Analyze(char *filename)
     code_words = lexical.analyze(source_code);
     lexical.print_words();
 //    write_result();
-}
-
-vector<string> Analyze::read_file(char *filename)
-{
-
-    fstream fin(filename, ios::in);
-    if(!fin.is_open())
-    {
-        cerr<<"cannot open file "<<filename <<endl;
-        exit(EXIT_FAILURE);
-    }
-
-    vector<string> lines;
-    string line;
-    while(!fin.eof())
-    {
-        getline(fin, line);
-        lines.push_back(line);
-    }
-    return lines;
 }
 
 // void Analyze::lexical_analyze();

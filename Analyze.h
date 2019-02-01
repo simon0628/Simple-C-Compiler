@@ -13,8 +13,7 @@ private:
 //    Semantic semantic;
 //    Optimize optimize;
 public:
-    Analyze(char *filename);
-    vector<string> read_file(char *filename);
+    Analyze(const string filename);
 //    void lexical_analyze();
     void write_result();
 };

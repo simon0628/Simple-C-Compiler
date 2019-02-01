@@ -12,6 +12,16 @@ enum Type
     t_const,
     t_unknown
 };
+const string type_str[8] = {
+        "keyword",
+        "operator",
+        "delimiter",
+        "bracket",
+        "function",
+        "variable",
+        "const",
+        "unknown"
+};
 
 const string keywords[6] = {"int", "void", "if", "else", "while", "return"};
 
