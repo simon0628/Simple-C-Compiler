@@ -10,7 +10,8 @@ Analyze::Analyze(char *filename)
     // wait for cut source_code into pieces
 
     code_words = lexical.analyze(source_code);
-    write_result();
+    lexical.print_words();
+//    write_result();
 }
 
 vector<string> Analyze::read_file(char *filename)

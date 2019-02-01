@@ -6,7 +6,7 @@ class Analyze
 {
 private:
     vector<string> source_code;
-    vector<Word> code_words;
+    list<Word> code_words;
 
     Lexical lexical;
 //    Grammar grammar;

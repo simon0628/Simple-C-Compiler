@@ -1,10 +1,12 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <list>
 #include <iostream>
 
 using std::vector;
 using std::string;
+using std::list;
 using std::cin;
 using std::cout;
 using std::endl;
@@ -15,11 +17,13 @@ struct Location
     int colum;
 };
 
+
 struct Word
 {
     Location location;
-    int types;
+    int type = 0;
     string content;
+    int value = 0;
 };
 
 //class Lexical;

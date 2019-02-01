@@ -3,6 +3,6 @@
 
 int main()
 {
-    Analyze analyze("../main.cpp");
+    Analyze analyze("../program.txt");
     return 0;
 }
