@@ -1,5 +1,6 @@
 #include "Analyze.h"
 #include <iostream>
+
 using namespace std;
 
 Analyze::Analyze(const string filename)
@@ -14,12 +15,12 @@ Analyze::Analyze(const string filename)
 }
 
 // void Analyze::lexical_analyze();
- void Analyze::write_result()
+void Analyze::write_result()
 {
     auto it = source_code.begin();
-    while(it != source_code.end())
+    while (it != source_code.end())
     {
-        cout<<*it<<endl;
+        cout << *it << endl;
         it++;
     }
 }

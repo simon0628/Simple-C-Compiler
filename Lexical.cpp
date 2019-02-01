@@ -24,7 +24,7 @@ list<Word> Lexical::analyze(vector<string> lines)
                 ch = word_str[++j];
             }
 
-            word_str = (*word_iter).content.substr(0,j);
+            word_str = (*word_iter).content.substr(0, j);
             bool is_keyword = false;
             for (const string &keyword : keywords)
             {
@@ -37,7 +37,7 @@ list<Word> Lexical::analyze(vector<string> lines)
             }
             if (!is_keyword)
             {
-                if((*word_iter).content[j] == '(')
+                if ((*word_iter).content[j] == '(')
                     (*word_iter).type = t_function;
                 else
                     (*word_iter).type = t_variable;
@@ -54,35 +54,35 @@ list<Word> Lexical::analyze(vector<string> lines)
             (*word_iter).value = sum;
             (*word_iter).type = t_const;
         }
-        else if(ch == ';' || ch == ',')
+        else if (ch == ';' || ch == ',')
         {
             (*word_iter).type = t_delimiter;
             j++;
         }
-        else if(ch == '(' || ch == ')' || ch == '{' || ch == '}')
+        else if (ch == '(' || ch == ')' || ch == '{' || ch == '}')
         {
             (*word_iter).type = t_bracket;
             j++;
         }
-        else if(ch == '+' || ch == '-' || ch == '*' || ch == '/' )
+        else if (ch == '+' || ch == '-' || ch == '*' || ch == '/')
         {
             (*word_iter).type = t_operator;
             j++;
         }
-        else if(ch == '<' || ch == '>' || ch == '=')
+        else if (ch == '<' || ch == '>' || ch == '=')
         {
             (*word_iter).type = t_operator;
             j++;
 
             ch = word_str[j];
-            if(ch == '=')
+            if (ch == '=')
                 j++;
         }
-        else if(ch == '!')
+        else if (ch == '!')
         {
             (*word_iter).type = t_operator;
-            if(word_str[j+1] == '=')
-                j+=2;
+            if (word_str[j + 1] == '=')
+                j += 2;
         }
         else
         {
@@ -106,23 +106,25 @@ list<Word> Lexical::analyze(vector<string> lines)
  */
 void Lexical::prepare(vector<string> lines)
 {
-    int i = 0, j = 0, colum = 0; // j为字符索引，colum为位置索引，遇到\t时不一样
+    int i = 0, j = 0, colum = 0, j0; // j为字符索引，colum为位置索引，遇到\t时不一样
     bool disable = false;
+    bool recording = false;
+    Word *new_word;
 
     for (string line : lines)
     {
         j = 0;
         colum = 0;
-        while(j < line.length())
+        while (j < line.length())
         {
-            if(line[j] == '*' && line[j+1] == '/')
+            if (line[j] == '*' && line[j + 1] == '/')
             {
                 disable = false;
-                j+=2;
-                colum +=2;
+                j += 2;
+                colum += 2;
                 continue;
             }
-            if(disable)
+            if (disable)
             {
                 j++;
                 colum++;
@@ -132,44 +134,52 @@ void Lexical::prepare(vector<string> lines)
             if (line[j] == '\t')
             {
                 j++;
-                colum+=4;
+                colum += 4;
                 continue;
             }
-            else if(line[j] == ' ' || line[j] == '\r' || line[j] == '\n')
+            else if (line[j] == ' ' || line[j] == '\r' || line[j] == '\n' || line[j] == '\0')
             {
+                if (recording)
+                {
+                    recording = false;
+                    new_word->content = line.substr(j0, j - j0);
+                    words.push_back(*new_word);
+                }
                 j++;
                 colum++;
                 continue;
             }
-            else if(line[j] == '/' && line[j+1] == '/')
+            else if (line[j] == '/' && line[j + 1] == '/')
             {
                 break;
             }
-            else if(line[j] == '/' && line[j+1] == '*')
+            else if (line[j] == '/' && line[j + 1] == '*')
             {
-                j+=2;
-                colum +=2;
+                j += 2;
+                colum += 2;
                 disable = true;
                 continue;
             }
             else
             {
-                Word word;
-                word.location.line = i;
-                word.location.colum = colum;
+                if (!recording)
+                {
+                    recording = true;
+                    new_word = new Word;
+                    new_word->location.line = i;
+                    new_word->location.colum = colum;
 
-                int j0 = j;
+                    j0 = j;
+                }
                 j++;
                 colum++;
-                while (line[j] != '\t' && line[j] != ' ' && line[j] != '\r' && line[j] != '\n')
-                {
-                    j++;
-                    colum++;
-                }
-                word.content = line.substr(j0, j-j0);
-
-                words.push_back(word);
             }
+        }
+        if (recording)
+        {
+            recording = false;
+            new_word->content = line.substr(j0, j - j0);
+            words.push_back(*new_word);
         }
         i++;
     }
@@ -182,30 +192,37 @@ void Lexical::split_word(const list<Word>::iterator word_iter, int j)
 
     new_word.location.line = (*word_iter).location.line;
     new_word.location.colum = (*word_iter).location.colum + j;
-    new_word.content = word_str.substr(j, word_str.length()-j);
+    new_word.content = word_str.substr(j, word_str.length() - j);
     words.insert(std::next(word_iter), new_word);
     (*word_iter).content = word_str.substr(0, j);
 }
 
-namespace Color {
-    enum Code {
-        FG_RED      = 31,
-        FG_GREEN    = 37,
-        FG_BLUE     = 34,
-        FG_MAGENTA  = 35,
-        FG_CYAN     = 36,
-        FG_DEFAULT  = 39,
-        BG_RED      = 41,
-        BG_GREEN    = 42,
-        BG_BLUE     = 44,
-        BG_DEFAULT  = 49
+namespace Color
+{
+    enum Code
+    {
+        FG_RED = 31,
+        FG_GREEN = 37,
+        FG_BLUE = 34,
+        FG_MAGENTA = 35,
+        FG_CYAN = 36,
+        FG_DEFAULT = 39,
+        BG_RED = 41,
+        BG_GREEN = 42,
+        BG_BLUE = 44,
+        BG_DEFAULT = 49
     };
-    class Modifier {
+
+    class Modifier
+    {
         Code code;
     public:
-        Modifier(Code pCode) : code(pCode) {}
-        friend std::ostream&
-        operator<<(std::ostream& os, const Modifier& mod) {
+        Modifier(Code pCode) : code(pCode)
+        {}
+
+        friend std::ostream &
+        operator<<(std::ostream &os, const Modifier &mod)
+        {
             return os << "\033[" << mod.code << "m";
         }
     };
@@ -220,18 +237,25 @@ void Lexical::print_words()
 {
     auto word_iter = words.begin();
     int len;
-    while(word_iter != words.end())
+    while (word_iter != words.end())
     {
-        switch((*word_iter).type)
+        switch ((*word_iter).type)
         {
-            case t_keyword: cout<<blue<<(*word_iter).content; break;
-            case t_const: cout<<green<<(*word_iter).content; break;
-            case t_function: cout<<magenta<<(*word_iter).content; break;
-            default: cout<<def<<(*word_iter).content;
+            case t_keyword:
+                cout << blue << (*word_iter).content;
+                break;
+            case t_const:
+                cout << green << (*word_iter).content;
+                break;
+            case t_function:
+                cout << magenta << (*word_iter).content;
+                break;
+            default:
+                cout << def << (*word_iter).content;
         }
 
         auto next_word = std::next(word_iter);
-        if((*word_iter).location.line == (*next_word).location.line)
+        if ((*word_iter).location.line == (*next_word).location.line)
         {
             len = (*next_word).location.colum - (*word_iter).location.colum - (*word_iter).content.length();
             word_iter++;
@@ -240,17 +264,17 @@ void Lexical::print_words()
         {
             word_iter++;
             len = (*word_iter).location.colum;
-            cout<<endl;
+            cout << endl;
         }
-        for(int i=0; i<len; i++)
-            cout<<' ';
+        for (int i = 0; i < len; i++)
+            cout << ' ';
     }
 
-    cout<<endl;
+    cout << endl;
     vector<string> lines;
-    for(word_iter = words.begin(); word_iter!=words.end(); word_iter++)
+    for (word_iter = words.begin(); word_iter != words.end(); word_iter++)
     {
-        string line = "<\'"+(*word_iter).content+"\',"+type_str[(*word_iter).type-1]+">";
+        string line = "<\'" + (*word_iter).content + "\'," + type_str[(*word_iter).type - 1] + ">";
         lines.push_back(line);
     }
     write_file("lexical_result.dat", lines);
