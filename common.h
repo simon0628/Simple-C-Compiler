@@ -25,10 +25,10 @@ struct Location
 };
 struct Word
 {
-    Location location;
-    int type = 0;
-    string content;
-    int value = 0;
+    Location location;          // 词在源代码中的位置
+    int type = 0;               // 类型
+    string content;             // 具体内容
+    int value = 0;              // 数值记录
 };
 
 vector<string> read_file(const string filename);

@@ -3,6 +3,7 @@
 
 int main()
 {
-    Analyze analyze("test2.txt");
+//    Analyze analyze("test.txt");
+    Analyze analyze("../Lexical.cpp");
     return 0;
 }
