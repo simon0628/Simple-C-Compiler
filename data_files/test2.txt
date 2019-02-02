@@ -1,0 +1,29 @@
+#include<iostream>
+using namespace std;
+
+int f(int left, int right,int a[])
+/*
+功能：计算每个元素的重数，并通过递归找到众数
+条件：数组a已经存在，且数组a的长度不为0
+参数：左指针left，右指针right
+*/
+{
+	int middle;
+	int count=1;
+	int H, L;
+	middle = (left + right) / 2;
+
+	if (middle + 1 > right)H = right;
+	else{
+		for (int i = middle + 1; i <= right; i++)
+		{
+			if (a[middle] == a[i]) {
+				count++;
+				if (i == right)H = right;
+			}
+			if (a[middle] != a[i]) {
+				H = i - 1; break;
+			}
+		}
+	}//向右计算a[middle]的重数
+$

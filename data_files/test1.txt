@@ -1,0 +1,13 @@
+int Number(int n, int m)//计算
+/*
+条件：int型数据n和int型数据m存在，且n和m必然满足本问题中的要求
+功能：递归方法计算出结果
+参数：n和m
+*/
+{
+	if (n == 1 || m == n || m == 1)return 1;
+	else
+	{
+		return Number(n - 1, m - 1) + m*Number(n - 1, m);
+	}
+}$

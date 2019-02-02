@@ -1,0 +1,37 @@
+<'int':keyword>   <'a':variable>   <';':delimiter>   
+<'int':keyword>   <'b':variable>   <';':delimiter>   
+<'int':keyword>   <'program':function>   <'(':bracket>   <'int':keyword>   <'a':variable>   <',':delimiter>   <'int':keyword>   <'b':variable>   <',':delimiter>   <'int':keyword>   <'c':variable>   <')':bracket>   
+<'{':bracket>   
+<'int':keyword>   <'i':variable>   <';':delimiter>   
+<'int':keyword>   <'j':variable>   <';':delimiter>   
+<'i':variable>   <'=':operator>   <'0':const>   <';':delimiter>   
+<'if':keyword>   <'(':bracket>   <'a':variable>   <'>':operator>   <'(':bracket>   <'b':variable>   <'+':operator>   <'c':variable>   <')':bracket>   <')':bracket>   
+<'{':bracket>   
+<'j':variable>   <'=':operator>   <'a':variable>   <'+':operator>   <'(':bracket>   <'b':variable>   <'*':operator>   <'c':variable>   <'+':operator>   <'1':const>   <')':bracket>   <';':delimiter>   
+<'}':bracket>   
+<'else':keyword>   
+<'{':bracket>   
+<'j':variable>   <'=':operator>   <'a':variable>   <';':delimiter>   
+<'}':bracket>   
+<'while':keyword>   <'(':bracket>   <'i':variable>   <'<=':operator>   <'100':const>   <')':bracket>   
+<'{':bracket>   
+<'i':variable>   <'=':operator>   <'j':variable>   <'*':operator>   <'2':const>   <';':delimiter>   
+<'}':bracket>   
+<'return':keyword>   <'i':variable>   <';':delimiter>   
+<'}':bracket>   
+<'int':keyword>   <'demo':function>   <'(':bracket>   <'int':keyword>   <'a':variable>   <')':bracket>   
+<'{':bracket>   
+<'a':variable>   <'=':operator>   <'a':variable>   <'+':operator>   <'2':const>   <';':delimiter>   
+<'return':keyword>   <'a':variable>   <'*':operator>   <'2':const>   <';':delimiter>   
+<'}':bracket>   
+<'void':keyword>   <'main':function>   <'(':bracket>   <'void':keyword>   <')':bracket>   
+<'{':bracket>   
+<'int':keyword>   <'a':variable>   <';':delimiter>   
+<'int':keyword>   <'b':variable>   <';':delimiter>   
+<'int':keyword>   <'c':variable>   <';':delimiter>   
+<'a':variable>   <'=':operator>   <'3':const>   <';':delimiter>   
+<'b':variable>   <'=':operator>   <'4':const>   <';':delimiter>   
+<'c':variable>   <'=':operator>   <'2':const>   <';':delimiter>   
+<'a':variable>   <'=':operator>   <'program':function>   <'(':bracket>   <'a':variable>   <',':delimiter>   <'b':variable>   <',':delimiter>   <'demo':function>   <'(':bracket>   <'c':variable>   <')':bracket>   <')':bracket>   <';':delimiter>   
+<'return':keyword>   <';':delimiter>   
+<'}':bracket>   
