@@ -9,16 +9,23 @@
 
 #include "common.h"
 
+
+/* ------------------------ 预测分析表 ------------------------ */
+
 enum table_type{        // 预测分析表项的类型
     shift = 0,
     reduce,
     acc,
     t_goto,
 };
+
 struct Table {          // 预测分析表表项
     table_type type;
     int value;
 };
+
+
+/* ------------------------ 文法规则 ------------------------ */
 
 struct Symbol           // 文法符号
 {
@@ -37,6 +44,7 @@ public:
 };
 
 
+/* ------------------------ Symtax ------------------------ */
 
 class Syntax
 {

@@ -122,7 +122,7 @@ void Syntax::make_rules(vector<string> lines)
             line_iter++;
             while((*line_iter)[9] != ';') // 规定一组文法规则以分号结尾
             {
-                string right_str = (*line_iter).substr(10, string::npos-9);
+                string right_str = (*line_iter).substr(10);
                 vector<string> right_symbols = str_split(right_str, " ");
 
                 Rule new_rule(left_symbol, right_symbols, &symbol_map_int);

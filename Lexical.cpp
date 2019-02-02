@@ -277,7 +277,7 @@ void Lexical::split_word(const list<Word>::iterator word_iter, int j)
 
     new_word.location.line = (*word_iter).location.line;
     new_word.location.colum = (*word_iter).location.colum + j;
-    new_word.content = word_str.substr(j, word_str.length() - j);
+    new_word.content = word_str.substr(j);
     words.insert(std::next(word_iter), new_word);
     (*word_iter).content = word_str.substr(0, j);
 }
