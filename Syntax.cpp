@@ -127,9 +127,14 @@ void Syntax::make_rules(vector<string> lines)
             string left_symbol = (*line_iter);
 
             line_iter++;
-            while((*line_iter)[1] != ';') // 规定一组文法规则以分号结尾
+
+            int i=0;
+            while((*line_iter)[i] == ' ' || (*line_iter)[i] == '\t')
+                i++;
+
+            while((*line_iter)[i] != ';') // 规定一组文法规则以分号结尾
             {
-                string right_str = (*line_iter).substr(2);
+                string right_str = (*line_iter).substr(i);
                 vector<string> right_symbols = str_split(right_str, " ");
 
                 Rule new_rule(left_symbol, right_symbols, &symbol_map_int);

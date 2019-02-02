@@ -23,7 +23,7 @@ Pull request is welcome!
 
 ## 文法
 
-C语言文法参考来自**ANSI C Yacc grammar **(https://www.lysator.liu.se/c/ANSI-C-grammar-y.html#and-expression)
+C语言文法参考来自**ANSI C Yacc grammar** (https://www.lysator.liu.se/c/ANSI-C-grammar-y.html#and-expression)
 
 以条件分支语句为例，终结符均用引号包含，非终结符为下划线连接的短语
 
