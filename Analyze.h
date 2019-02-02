@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 #include "Lexical.h"
-#include "Grammar.h"
+#include "Syntax.h"
 
 class Analyze
 {
@@ -10,7 +10,7 @@ private:
     list<Word> code_words;
 
     Lexical lexical;
-    Grammar grammar;
+    Syntax grammar;
 //    Semantic semantic;
 //    Optimize optimize;
 public:

@@ -36,7 +36,7 @@ Status write_file(const string filename, vector<string> lines);
 
 
 //class Lexical;
-//class Grammar;
+//class Syntax;
 //class Semantic;
 //class Optimize;
 //class Analyze;

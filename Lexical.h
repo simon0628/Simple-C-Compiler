@@ -1,7 +1,7 @@
 #pragma once
 #include "common.h"
 
-enum Type                     // 所有词法种类，0则表示出错
+enum lexical_type             // 所有词法种类，0则表示出错
 {
     t_error = 0,
     t_keyword,

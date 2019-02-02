@@ -3,4 +3,4 @@ project(test)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(test main.cpp Analyze.cpp Lexical.cpp common.cpp Grammar.cpp Grammar.h)
+add_executable(test main.cpp Analyze.cpp Lexical.cpp common.cpp Syntax.cpp)
