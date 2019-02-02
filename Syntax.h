@@ -26,6 +26,7 @@ struct Table {          // 预测分析表表项
 
 
 /* ------------------------ 文法规则 ------------------------ */
+const string START_SYMBOL = "translation_unit";
 
 struct Symbol           // 文法符号
 {
@@ -34,12 +35,10 @@ struct Symbol           // 文法符号
     bool is_terminal;   // 是否为终结符
 };
 
-class Rule              // 单条文法规则
+struct Rule              // 单条文法规则
 {
-private:
     Symbol left;
     vector<Symbol> right;
-public:
     Rule(const string &left_symbol, const vector<string> &right_symbols, map<string, int> *symbol_map_int);
 };
 
@@ -54,6 +53,7 @@ private:
     int **table;
 
     void make_rules(vector<string> lines);
+    void make_first();
 
 
 public:

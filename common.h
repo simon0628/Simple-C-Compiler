@@ -54,7 +54,7 @@ const int TAB_SPACE = 4;
 const string LEXICAL_RESULT_FILE = "lexical_result.dat";
 
 // input filenames
-const string SYNTAX_RULE_FILE = "syntax_rules.dat";
+const string SYNTAX_RULE_FILE = "rules.dat";
 
 
 bool is_letter(char ch);
