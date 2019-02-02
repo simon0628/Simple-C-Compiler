@@ -1,6 +1,7 @@
 #include "common.h"
 #include "Lexical.h"
 
+/* ------------------------ public ------------------------ */
 
 /*
  * 功能：词法分析主程序，public
@@ -29,10 +30,10 @@ list<Word> Lexical::analyze(vector<string> lines)
         j = 0;
         char ch = word_str[j];
 
-        if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_')
+        if (is_letter(ch) || ch == '_')
         { // 标识符或保留字
             ch = word_str[++j];
-            while ((ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch == '_')
+            while ((ch >= '0' && ch <= '9') || is_letter(ch) || ch == '_')
             {
                 ch = word_str[++j];
             }
@@ -105,6 +106,28 @@ list<Word> Lexical::analyze(vector<string> lines)
     return words;
 }
 
+/*
+ * 功能：将words数组的信息输出到文件内
+ */
+void Lexical::save_result()
+{
+    vector<string> lines;
+    string line;
+    for (auto word_iter = words.begin(); word_iter != words.end(); word_iter++)
+    {
+        line += "<\'" + (*word_iter).content + "\':" + type_str[(*word_iter).type] + ">   ";
+        if(std::next(word_iter)->location.line != word_iter->location.line)
+        {
+            lines.push_back(line);
+//            cout<<line<<endl;
+            line = "";
+        }
+    }
+    write_file(LEXICAL_RESULT_FILE, lines);
+}
+
+
+/* ------------------------ private ------------------------ */
 
 /*
  * 功能：格式化代码
@@ -168,7 +191,7 @@ void Lexical::prepare(vector<string> lines)
             if (line[j] == '\t')
             {
                 j++;
-                colum += 4;
+                colum += TAB_SPACE;
             }
             else if(line[j] == '"' && line[j+1] != '\'') // 第一次遇到双引号，且此双引号不在单引号内
             {
@@ -259,25 +282,7 @@ void Lexical::split_word(const list<Word>::iterator word_iter, int j)
     (*word_iter).content = word_str.substr(0, j);
 }
 
-/*
- * 功能：将words数组的信息输出到"lexical_result.dat"文件内
- */
-void Lexical::save_result()
-{
-    vector<string> lines;
-    string line;
-    for (auto word_iter = words.begin(); word_iter != words.end(); word_iter++)
-    {
-        line += "<\'" + (*word_iter).content + "\':" + type_str[(*word_iter).type] + ">   ";
-        if(std::next(word_iter)->location.line != word_iter->location.line)
-        {
-            lines.push_back(line);
-//            cout<<line<<endl;
-            line = "";
-        }
-    }
-    write_file("lexical_result.dat", lines);
-}
+/* ------------------------ TODOs ------------------------ */
 
 /*
  * 功能：cmd测试使用，为输出程序赋颜色

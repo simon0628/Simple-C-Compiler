@@ -1,19 +1,7 @@
 #pragma once
 #include "common.h"
 
-enum lexical_type             // 所有词法种类，0则表示出错
-{
-    t_error = 0,
-    t_keyword,
-    t_operator,
-    t_delimiter,
-    t_bracket,
-    t_function,
-    t_variable,
-    t_const,
-    t_string,
-    t_unknown
-};
+
 const string type_str[] = {   // 词法种类对应的字符串，输出时用
         "error",
         "keyword",

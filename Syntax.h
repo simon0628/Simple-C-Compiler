@@ -16,23 +16,36 @@ enum table_type{        // 预测分析表项的类型
     t_goto,
 };
 struct Table {          // 预测分析表表项
-    int type;
+    table_type type;
     int value;
 };
 
-struct Rule
+struct Symbol           // 文法符号
 {
-    int left;
-    vector<int> right;
+    int num;            // 符号对应的序号，在分析过程中只使用序号，不考虑string
+    string content;     // 保存string用于输出
+    bool is_terminal;   // 是否为终结符
 };
+
+class Rule              // 单条文法规则
+{
+private:
+    Symbol left;
+    vector<Symbol> right;
+public:
+    Rule(const string &left_symbol, const vector<string> &right_symbols, map<string, int> *symbol_map_int);
+};
+
+
 
 class Syntax
 {
 private:
     vector<Rule> rules;
+    map<string, int> symbol_map_int;
     int **table;
 
-    vector<Rule> string_to_rules(vector<string> lines);
+    void make_rules(vector<string> lines);
 
 
 public:
