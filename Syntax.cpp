@@ -11,31 +11,41 @@
  */
 Syntax::Syntax()
 {
-    make_rules(read_file(SYNTAX_RULE_FILE));
+    init_rules(SYNTAX_RULE_FILE);
 
 //    map<string, int>::iterator iter;
-//    iter = symbol_map_int.begin();
-//    while (iter != symbol_map_int.end())
+//    iter = str_map_symbol.begin();
+//    while (iter != str_map_symbol.end())
 //    {
 //        cout << iter->first << " : " << iter->second << endl;
 //        iter++;
 //    }
-//
-//    for(Symbol symbol:symbols)
-//    {
-//        if(symbol.is_terminal)
-//            cout<<symbol.num<<" : ["<<symbol.content<<"]"<<endl;
-//        else
-//            cout<<symbol.num<<" : "<<symbol.content<<endl;
-//    }
-//
-//    for (Rule rule:rules)
-//    {
-//        cout << rule.left.num << " -> ";
-//        for (Symbol symbol:rule.right)
-//            cout << symbol.num << ' ';
-//        cout << endl;
-//    }
+
+    for(Symbol symbol:symbols)
+    {
+        if(symbol.is_terminal)
+            cout<<symbol.id<<" : ["<<symbol.content<<"]"<<endl;
+        else
+            cout<<symbol.id<<" : "<<symbol.content<<endl;
+    }
+
+    for (Rule rule:rules)
+    {
+        cout << rule.left->id << " -> ";
+        for (Symbol* symbol:rule.right)
+            cout << symbol->id << ' ';
+        cout << endl;
+    }
+
+    init_first();
+
+    for(Symbol symbol:symbols)
+    {
+        cout<<symbol.content<<": ";
+        for(Symbol *first_symbol: symbol.first)
+            cout<<first_symbol->content<<' ';
+        cout<<endl;
+    }
 }
 
 Syntax::~Syntax()
@@ -68,78 +78,132 @@ void Syntax::add_rule(const string &left_symbol, const vector<string> &right_sym
 
     Rule new_rule;
 
+
     /* ------------------ 对规则左半边的处理 ------------------ */
-    new_rule.left.content = left_symbol;
-    new_rule.left.is_terminal = false;
 
     // 若map中不存在此项，则为第一次遇到此符号
-    if (symbol_map_int.find(left_symbol) == symbol_map_int.end())
+    if (str_map_symbol.find(left_symbol) == str_map_symbol.end())
     {
-        new_rule.left.num = symbol_num;
+        Symbol* new_left = new Symbol;
+        new_left->content = left_symbol;
+        new_left->is_terminal = false;
+        new_left->id = symbol_num;
 
-        symbol_map_int[left_symbol] = symbol_num;
-        symbols.push_back(new_rule.left);
+        new_rule.left = new_left;
+
+        str_map_symbol[left_symbol] = new_left;
+        symbols.push_back(*new_left);
         symbol_num++;
     }
     else
     {
-        new_rule.left.num = symbol_map_int[left_symbol];
+        new_rule.left = str_map_symbol[left_symbol];
     }
 
     /* ------------------ 对规则右半边的处理 ------------------ */
     for (const string &right_symbol : right_symbols)
     {
-
-        Symbol new_right;
-
-        // 规定非终结符必须使用单引号注明
-        if (right_symbol[0] == '\'')
-        {
-            int j = 1;
-            while (right_symbol[j] != '\'' && j < right_symbol.length())
-                j++;
-            new_right.content = right_symbol.substr(1, j - 1);
-            new_right.is_terminal = true;
-        }
-        else
-        {
-            new_right.content = right_symbol;
-            new_right.is_terminal = false;
-        }
-
         // 若map中不存在此项，则为第一次遇到此符号
-        if (symbol_map_int.find(right_symbol) == symbol_map_int.end())
+        if (str_map_symbol.find(right_symbol) == str_map_symbol.end())
         {
-            new_right.num = symbol_num;
+            Symbol* new_right = new Symbol;
+            new_right->id = symbol_num;
+            // 规定非终结符必须使用单引号注明
+            if (right_symbol[0] == '\'')
+            {
+                int j = 1;
+                while (right_symbol[j] != '\'' && j < right_symbol.length())
+                    j++;
+                new_right->content = right_symbol.substr(1, j - 1);
+                new_right->is_terminal = true;
+            }
+            else
+            {
+                new_right->content = right_symbol;
+                new_right->is_terminal = false;
+            }
 
-            symbol_map_int[right_symbol] = symbol_num;
-            symbols.push_back(new_right);
+            new_rule.right.push_back(new_right);
 
+            str_map_symbol[right_symbol] = new_right;
+            symbols.push_back(*new_right);
             symbol_num++;
         }
         else
         {
-            new_right.num = symbol_map_int[right_symbol];
+            new_rule.right.push_back(str_map_symbol[right_symbol]);
         }
-        new_rule.right.push_back(new_right);
     }
     rules.push_back(new_rule);
 
 }
 
-void Syntax::make_first()
+/*
+（1）若X∈VT,则FIRST(X）={X}；
+（2）若X∈VN,且有产生式X→a…,a∈VT,则把a加入到FIRST（X）中，若有X→ε，则把ε加入FIRST(X)；
+（3）若X∈VN,且X→Y… ,Y∈VN, 则把
+                   FIRST(Y) - {ε}加到FIRST(X)中，
+             若X→Y1Y2 … Yk,Y1, Y2, … ,Yi-1 ∈ VN, ε∈FIRST (Yj)，则把
+					   (1<=j<=i-1)
+                   FIRST(Yi) - {ε}加到FIRST (X)中。
+          特别地，若ε∈FIRST(Yj) (1<=j<=k)，则 ε∈FIRST(X)
+ */
+void Syntax::init_first()
 {
-    for(const Symbol& symbol:symbols)
+    for(Symbol X:symbols)
     {
-        
+        if(X.is_terminal)
+        {
+            X.first.insert(&X);
+        }
+        else
+        {
+            for(Rule rule:rules)
+            {
+                if(rule.left->id == X.id)
+                {
+                    if(rule.right[0]->is_terminal)
+                    {
+                        X.first.insert(rule.right[0]);
+                    }
+                    else
+                    {
+                        for(Symbol* first_symbol : rule.right[0]->first)
+                        {
+                            if(first_symbol != epsilon)
+                                X.first.insert(first_symbol);
+                        }
+
+                        auto Y_iter = rule.right.begin();
+                        while(!(*Y_iter)->is_terminal && Y_iter!= rule.right.end())
+                        {
+                            if((*Y_iter)->first.find(epsilon) == (*Y_iter)->first.end())
+                                break;
+                            Y_iter++;
+                        }
+
+                        if(Y_iter != rule.right.begin())
+                        {
+                            for (Symbol *first_symbol : (*Y_iter)->first)
+                            {
+                                if (first_symbol != epsilon)
+                                    X.first.insert(first_symbol);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 }
 
 /*
  * 功能：处理文法文件中所有文法规则
  */
-void Syntax::make_rules(vector<string> lines)
+void Syntax::init_rules(const string &filename)
 {
+    vector<string> lines = read_file(filename);
     auto line_iter = lines.begin();
 
     while (line_iter != lines.end())
@@ -166,4 +230,6 @@ void Syntax::make_rules(vector<string> lines)
         }
         line_iter++;
     }
+
+    epsilon = str_map_symbol[EPSILON];
 }

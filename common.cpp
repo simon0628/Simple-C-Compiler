@@ -4,7 +4,7 @@ bool is_letter(char ch)
 {
     return ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z'));
 }
-vector<string> read_file(const string filename)
+vector<string> read_file(const string &filename)
 {
 
     std::fstream fin(filename, std::ios::in);
@@ -24,7 +24,7 @@ vector<string> read_file(const string filename)
     return lines;
 }
 
-Status write_file(const string filename, vector<string> lines)
+Status write_file(const string &filename, vector<string> lines)
 {
     std::fstream fout(filename, std::ios::out);
     if (!fout.is_open())

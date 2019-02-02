@@ -8,7 +8,7 @@
 #endif //TEST_GRAMMAR_H
 
 #include "common.h"
-
+#define EPSILON "$"
 
 /* ------------------------ 预测分析表 ------------------------ */
 
@@ -30,17 +30,17 @@ const string START_SYMBOL = "translation_unit";
 
 struct Symbol           // 文法符号
 {
-    int num;            // 符号对应的序号，在分析过程中只使用序号，不考虑string
+    int id;             // 符号对应的序号，在分析过程中只使用序号，不考虑string
     string content;     // 保存string用于输出
     bool is_terminal;   // 是否为终结符
-    vector<int> first;
-    vector<int> follow;
+    set<Symbol*> first;
+    set<Symbol*> follow;
 };
 
 struct Rule              // 单条文法规则
 {
-    Symbol left;
-    vector<Symbol> right;
+    Symbol* left;
+    vector<Symbol*> right;
 };
 
 
@@ -51,13 +51,14 @@ class Syntax
 private:
     vector<Rule> rules;
     vector<Symbol> symbols;
-    map<string, int> symbol_map_int;
+    map<string, Symbol*> str_map_symbol;
 
+    Symbol* epsilon;
     int **table;
 
     void add_rule(const string &left_symbol, const vector<string> &right_symbols);
-    void make_rules(vector<string> lines);
-    void make_first();
+    void init_rules(const string &filename);
+    void init_first();
 
 
 public:
