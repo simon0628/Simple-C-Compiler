@@ -260,6 +260,26 @@ void Lexical::split_word(const list<Word>::iterator word_iter, int j)
 }
 
 /*
+ * 功能：将words数组的信息输出到"lexical_result.dat"文件内
+ */
+void Lexical::save_result()
+{
+    vector<string> lines;
+    string line;
+    for (auto word_iter = words.begin(); word_iter != words.end(); word_iter++)
+    {
+        line += "<\'" + (*word_iter).content + "\':" + type_str[(*word_iter).type] + ">   ";
+        if(std::next(word_iter)->location.line != word_iter->location.line)
+        {
+            lines.push_back(line);
+//            cout<<line<<endl;
+            line = "";
+        }
+    }
+    write_file("lexical_result.dat", lines);
+}
+
+/*
  * 功能：cmd测试使用，为输出程序赋颜色
  */
 namespace Color
@@ -294,17 +314,17 @@ namespace Color
     };
 }
 
-Color::Modifier grey(Color::FG_GREY);
-Color::Modifier blue(Color::FG_BLUE);
-Color::Modifier green(Color::FG_GREEN);
-Color::Modifier magenta(Color::FG_MAGENTA);
-Color::Modifier def(Color::FG_DEFAULT);
-
 /*
  * 功能：cmd测试使用，为输出程序赋颜色
  */
 void Lexical::print_words()
 {
+    Color::Modifier grey(Color::FG_GREY);
+    Color::Modifier blue(Color::FG_BLUE);
+    Color::Modifier green(Color::FG_GREEN);
+    Color::Modifier magenta(Color::FG_MAGENTA);
+    Color::Modifier def(Color::FG_DEFAULT);
+
     auto word_iter = words.begin();
     int len;
     while (word_iter != words.end())
@@ -342,21 +362,4 @@ void Lexical::print_words()
         for (int i = 0; i < len; i++)
             cout << ' ';
     }
-    cout << endl;
-
-
-    vector<string> lines;
-    string line;
-    for (word_iter = words.begin(); word_iter != words.end(); word_iter++)
-    {
-        line += "<\'" + (*word_iter).content + "\':" + type_str[(*word_iter).type] + ">   ";
-        if(std::next(word_iter)->location.line != word_iter->location.line)
-        {
-            lines.push_back(line);
-//            cout<<line<<endl;
-            line = "";
-        }
-    }
-    write_file("lexical_result.dat", lines);
-
 }

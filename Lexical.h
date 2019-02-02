@@ -35,15 +35,16 @@ const string keywords[] = {   // 保留字
         "while",
         "return",
 
-        "string",
         "for",
         "include",
-        "auto",
         "char",
         "bool",
         "break",
         "continue",
         "const",
+
+        "string",
+        "auto",
         "public",
         "private",
         "vector",
@@ -59,5 +60,6 @@ private:
 
 public:
     list<Word> analyze(vector<string> lines);
+    void save_result();
     void print_words();
 };

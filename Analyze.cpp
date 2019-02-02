@@ -10,7 +10,10 @@ Analyze::Analyze(const string filename)
     // wait for cut source_code into pieces
 
     code_words = lexical.analyze(source_code);
+    lexical.save_result();
     lexical.print_words();
+
+    grammar.analyze(code_words);
 //    write_result();
 }
 
