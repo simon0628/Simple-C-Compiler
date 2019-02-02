@@ -33,25 +33,29 @@ struct Symbol           // 文法符号
     int num;            // 符号对应的序号，在分析过程中只使用序号，不考虑string
     string content;     // 保存string用于输出
     bool is_terminal;   // 是否为终结符
+    vector<int> first;
+    vector<int> follow;
 };
 
 struct Rule              // 单条文法规则
 {
     Symbol left;
     vector<Symbol> right;
-    Rule(const string &left_symbol, const vector<string> &right_symbols, map<string, int> *symbol_map_int);
 };
 
 
-/* ------------------------ Symtax ------------------------ */
+/* ------------------------ Syntax ------------------------ */
 
 class Syntax
 {
 private:
     vector<Rule> rules;
+    vector<Symbol> symbols;
     map<string, int> symbol_map_int;
+
     int **table;
 
+    void add_rule(const string &left_symbol, const vector<string> &right_symbols);
     void make_rules(vector<string> lines);
     void make_first();
 
