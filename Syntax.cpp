@@ -46,6 +46,17 @@ Syntax::Syntax()
             cout<<symbols[symbol_firsts].content<<' ';
         cout<<endl;
     }
+
+    init_follow();
+    cout<<endl;
+
+    for(Symbol symbol:symbols)
+    {
+        cout<<symbol.content<<": ";
+        for(int symbol_firsts: symbol.follow)
+            cout<<symbols[symbol_firsts].content<<' ';
+        cout<<endl;
+    }
 }
 
 Syntax::~Syntax()
@@ -148,7 +159,7 @@ void Syntax::add_rule(const string &left_symbol, const vector<string> &right_sym
 					   (1<=j<=i-1)
                    FIRST(Yi) - {ε}加到FIRST (X)中。
           特别地，若ε∈FIRST(Yj) (1<=j<=k)，则 ε∈FIRST(X)
- */
+*/
 void Syntax::init_first()
 {
     set<int> back_patch;
@@ -182,7 +193,11 @@ void Syntax::init_first()
                             Y_iter++;
                         }
 
-                        if (Y_iter != rule.right_ids.begin())
+                        if(Y_iter == rule.right_ids.end())
+                        {
+                            X.first.insert(epsilon_id);
+                        }
+                        else if (Y_iter != rule.right_ids.begin())
                         {
                             X.first.insert(*Y_iter);
                             back_patch.insert(X.id);
@@ -234,18 +249,123 @@ void Syntax::init_first()
     }
 }
 
+/*
+（1） 置 FIRST(α) = FIRST (X1) - {ε};
+（2） 若对 1<=j<= i -1,  ε∈FIRST (Xj), 则把
+    	FIRST(Xi) -{ε}加到FIRST(α)中；
+（3） 若对1<= j <=n, ε∈FIRST (Xj), 则把
+       ε加到FIRST(α)中。
+ */
+set<int> Syntax::get_first(vector<int> alpha)
+{
+    vector<int> back_patch;
+    set<int> first;
+
+    for(int symbol_of_first : symbols[alpha[0]].first)
+    {
+        if(symbols[symbol_of_first].id != epsilon_id)
+            first.insert(symbols[symbol_of_first].id);
+    }
+    for(int symbol:alpha)
+    {
+        auto Y_iter = alpha.begin();
+        while (!symbols[(*Y_iter)].is_terminal && Y_iter != alpha.end())
+        {
+            set<int> firsts_of_Y = symbols[(*Y_iter)].first;
+            if (firsts_of_Y.find(epsilon_id) == firsts_of_Y.end())
+                break;
+            Y_iter++;
+        }
+
+        if(Y_iter == alpha.end())
+        {
+            first.insert(epsilon_id);
+        }
+        else if (Y_iter != alpha.begin())
+        {
+            for(int symbol_of_first : symbols[(*Y_iter)].first)
+            {
+                if(symbols[symbol_of_first].id != epsilon_id)
+                    first.insert(symbols[symbol_of_first].id);
+            }
+        }
+    }
+    return first;
+}
 
 /*
 （1）若A为文法开始符号，置#于FOLLOW(A）中；
 （2）若有产生式B→αAβ,
 	则将FIRST(β) - {ε}加到FOLLOW (A)中;
-（3）若有B→αA或B →αAβ, 且β  ε
+（3）若有B→αA或B →αAβ, 且β -*-> ε
 	则将FOLLOW(B)加到FOLLOW(A)中；
 （4）反复使用以上规则, 直至 FOLLOW(A)不再增大为止。
 */
 void Syntax::init_follow()
 {
+    set<int> back_patch;
 
+    symbols[start_symbol_id].follow.insert(sharp_id);
+    for(Rule rule:rules)
+    {
+        auto A_iter = rule.right_ids.begin();
+        for(; A_iter != rule.right_ids.end()-1; A_iter++)
+        {
+            if(!symbols[*A_iter].is_terminal)
+            {
+                vector<int> beta;
+                for(auto beta_iter = A_iter; beta_iter != rule.right_ids.end(); beta_iter++)
+                    beta.push_back(*beta_iter);
+                for(int symbol_of_first : get_first(beta))
+                    symbols[*A_iter].follow.insert(symbol_of_first);
+            }
+        }
+        if(!symbols[*A_iter].is_terminal)
+        {
+            back_patch.insert(*A_iter);
+            symbols[*A_iter].follow.insert(rule.left_id);
+        }
+    }
+
+    bool is_updated = false;
+    do
+    {
+        is_updated= false;
+        for (auto back_patch_iter = back_patch.begin(); back_patch_iter!= back_patch.end(); back_patch_iter++)
+        {
+            for(int Y:symbols[*back_patch_iter].follow)
+            {
+                if(!symbols[Y].is_terminal)
+                {
+                    for(int follow_of_symbols : symbols[Y].follow)
+                    {
+                        if(follow_of_symbols!=epsilon_id)
+                        {
+                            if(symbols[*back_patch_iter].follow.find(follow_of_symbols) == symbols[*back_patch_iter].follow.end())
+                            {
+                                is_updated = true;
+                                symbols[*back_patch_iter].follow.insert(follow_of_symbols);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }while(is_updated);
+
+    for(int back_patch_id : back_patch)
+    {
+        vector<int> delete_symbols;
+        for(int symbol_of_follow : symbols[back_patch_id].follow)
+        {
+            if(!symbols[symbol_of_follow].is_terminal)
+            {
+                delete_symbols.push_back(symbol_of_follow);
+            }
+        }
+        for(int symbol_to_delete: delete_symbols)
+            symbols[back_patch_id].follow.erase(symbol_to_delete);
+    }
 }
 
 /*
@@ -281,6 +401,12 @@ void Syntax::init_rules(const string &filename)
         line_iter++;
     }
 
-    if(str_map_symbol.find("\'$\'")!= str_map_symbol.end())
-        epsilon_id = str_map_symbol["\'$\'"]->id;
+    if(str_map_symbol.find(EPSILON)!= str_map_symbol.end())
+        epsilon_id = str_map_symbol[EPSILON]->id;
+
+    if(str_map_symbol.find(START_SYMBOL)!= str_map_symbol.end())
+        start_symbol_id = str_map_symbol[START_SYMBOL]->id;
+
+    if(str_map_symbol.find(SHARP)!= str_map_symbol.end())
+        sharp_id = str_map_symbol[SHARP]->id;
 }

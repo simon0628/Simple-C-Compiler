@@ -8,7 +8,6 @@
 #endif //TEST_GRAMMAR_H
 
 #include "common.h"
-#define EPSILON "$"
 
 /* ------------------------ 预测分析表 ------------------------ */
 
@@ -27,6 +26,8 @@ struct Table {          // 预测分析表表项
 
 /* ------------------------ 文法规则 ------------------------ */
 const string START_SYMBOL = "translation_unit";
+const string EPSILON = "\'$\'";
+const string SHARP = "\'#\'";
 
 struct Symbol           // 文法符号
 {
@@ -54,12 +55,15 @@ private:
     map<string, Symbol*> str_map_symbol;
 
     int epsilon_id;
+    int start_symbol_id;
+    int sharp_id;
 
     int **table;
 
     void add_rule(const string &left_symbol, const vector<string> &right_symbols);
     void init_rules(const string &filename);
     void init_first();
+    set<int> get_first(vector<int> alpha);
     void init_follow();
 
 
