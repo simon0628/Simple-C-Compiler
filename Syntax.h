@@ -33,14 +33,14 @@ struct Symbol           // 文法符号
     int id;             // 符号对应的序号，在分析过程中只使用序号，不考虑string
     string content;     // 保存string用于输出
     bool is_terminal;   // 是否为终结符
-    set<Symbol*> first;
-    set<Symbol*> follow;
+    set<int> first;
+    set<int> follow;
 };
 
 struct Rule              // 单条文法规则
 {
-    Symbol* left;
-    vector<Symbol*> right;
+    int left_id;
+    vector<int> right_ids;
 };
 
 
@@ -53,12 +53,14 @@ private:
     vector<Symbol> symbols;
     map<string, Symbol*> str_map_symbol;
 
-    Symbol* epsilon;
+    int epsilon_id;
+
     int **table;
 
     void add_rule(const string &left_symbol, const vector<string> &right_symbols);
     void init_rules(const string &filename);
     void init_first();
+    void init_follow();
 
 
 public:

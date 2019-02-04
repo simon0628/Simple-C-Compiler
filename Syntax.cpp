@@ -31,9 +31,9 @@ Syntax::Syntax()
 
     for (Rule rule:rules)
     {
-        cout << rule.left->id << " -> ";
-        for (Symbol* symbol:rule.right)
-            cout << symbol->id << ' ';
+        cout << rule.left_id << " -> ";
+        for (int right_symbol:rule.right_ids)
+            cout << right_symbol << ' ';
         cout << endl;
     }
 
@@ -42,8 +42,8 @@ Syntax::Syntax()
     for(Symbol symbol:symbols)
     {
         cout<<symbol.content<<": ";
-        for(Symbol *first_symbol: symbol.first)
-            cout<<first_symbol->content<<' ';
+        for(int symbol_firsts: symbol.first)
+            cout<<symbols[symbol_firsts].content<<' ';
         cout<<endl;
     }
 }
@@ -89,15 +89,16 @@ void Syntax::add_rule(const string &left_symbol, const vector<string> &right_sym
         new_left->is_terminal = false;
         new_left->id = symbol_num;
 
-        new_rule.left = new_left;
+        new_rule.left_id = symbol_num;
 
         str_map_symbol[left_symbol] = new_left;
         symbols.push_back(*new_left);
+
         symbol_num++;
     }
     else
     {
-        new_rule.left = str_map_symbol[left_symbol];
+        new_rule.left_id = str_map_symbol[left_symbol]->id;
     }
 
     /* ------------------ 对规则右半边的处理 ------------------ */
@@ -123,19 +124,19 @@ void Syntax::add_rule(const string &left_symbol, const vector<string> &right_sym
                 new_right->is_terminal = false;
             }
 
-            new_rule.right.push_back(new_right);
+            new_rule.right_ids.push_back(symbol_num);
 
             str_map_symbol[right_symbol] = new_right;
             symbols.push_back(*new_right);
+
             symbol_num++;
         }
         else
         {
-            new_rule.right.push_back(str_map_symbol[right_symbol]);
+            new_rule.right_ids.push_back(str_map_symbol[right_symbol]->id);
         }
     }
     rules.push_back(new_rule);
-
 }
 
 /*
@@ -150,52 +151,101 @@ void Syntax::add_rule(const string &left_symbol, const vector<string> &right_sym
  */
 void Syntax::init_first()
 {
-    for(Symbol X:symbols)
+    set<int> back_patch;
+    for (Symbol &X:symbols)
     {
-        if(X.is_terminal)
+        if (X.is_terminal)
         {
-            X.first.insert(&X);
+            X.first.insert(X.id);
         }
         else
         {
-            for(Rule rule:rules)
+            for (Rule &rule:rules)
             {
-                if(rule.left->id == X.id)
+                if (rule.left_id == X.id)
                 {
-                    if(rule.right[0]->is_terminal)
+                    if (symbols[rule.right_ids[0]].is_terminal)
                     {
-                        X.first.insert(rule.right[0]);
+                        X.first.insert(rule.right_ids[0]);
                     }
                     else
                     {
-                        for(Symbol* first_symbol : rule.right[0]->first)
-                        {
-                            if(first_symbol != epsilon)
-                                X.first.insert(first_symbol);
-                        }
+                        X.first.insert(rule.right_ids[0]);
+                        back_patch.insert(X.id);
 
-                        auto Y_iter = rule.right.begin();
-                        while(!(*Y_iter)->is_terminal && Y_iter!= rule.right.end())
+                        auto Y_iter = rule.right_ids.begin();
+                        while (!symbols[(*Y_iter)].is_terminal && Y_iter != rule.right_ids.end())
                         {
-                            if((*Y_iter)->first.find(epsilon) == (*Y_iter)->first.end())
+                            set<int> firsts_of_Y = symbols[(*Y_iter)].first;
+                            if (firsts_of_Y.find(epsilon_id) == firsts_of_Y.end())
                                 break;
                             Y_iter++;
                         }
 
-                        if(Y_iter != rule.right.begin())
+                        if (Y_iter != rule.right_ids.begin())
                         {
-                            for (Symbol *first_symbol : (*Y_iter)->first)
+                            X.first.insert(*Y_iter);
+                            back_patch.insert(X.id);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bool is_updated = false;
+    do
+    {
+        is_updated= false;
+        for (auto back_patch_iter = back_patch.begin(); back_patch_iter!= back_patch.end(); back_patch_iter++)
+        {
+            for(int Y:symbols[*back_patch_iter].first)
+            {
+                if(!symbols[Y].is_terminal)
+                {
+                    for(int first_of_symbols : symbols[Y].first)
+                    {
+                        if(first_of_symbols!=epsilon_id)
+                        {
+                            if(symbols[*back_patch_iter].first.find(first_of_symbols) == symbols[*back_patch_iter].first.end())
                             {
-                                if (first_symbol != epsilon)
-                                    X.first.insert(first_symbol);
+                                is_updated = true;
+                                symbols[*back_patch_iter].first.insert(first_of_symbols);
                             }
                         }
                     }
                 }
             }
         }
+    }while(is_updated);
 
+    for(int back_patch_id : back_patch)
+    {
+        vector<int> delete_symbols;
+        for(int symbol_of_first : symbols[back_patch_id].first)
+        {
+            if(!symbols[symbol_of_first].is_terminal)
+            {
+                delete_symbols.push_back(symbol_of_first);
+            }
+        }
+        for(int symbol_to_delete: delete_symbols)
+            symbols[back_patch_id].first.erase(symbol_to_delete);
     }
+}
+
+
+/*
+（1）若A为文法开始符号，置#于FOLLOW(A）中；
+（2）若有产生式B→αAβ,
+	则将FIRST(β) - {ε}加到FOLLOW (A)中;
+（3）若有B→αA或B →αAβ, 且β  ε
+	则将FOLLOW(B)加到FOLLOW(A)中；
+（4）反复使用以上规则, 直至 FOLLOW(A)不再增大为止。
+*/
+void Syntax::init_follow()
+{
+
 }
 
 /*
@@ -231,5 +281,6 @@ void Syntax::init_rules(const string &filename)
         line_iter++;
     }
 
-    epsilon = str_map_symbol[EPSILON];
+    if(str_map_symbol.find("\'$\'")!= str_map_symbol.end())
+        epsilon_id = str_map_symbol["\'$\'"]->id;
 }
