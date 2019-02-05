@@ -21,12 +21,12 @@ Syntax::Syntax()
 //        iter++;
 //    }
 
-    for(Symbol symbol:symbols)
+    for (Symbol symbol:symbols)
     {
-        if(symbol.is_terminal)
-            cout<<symbol.id<<" : ["<<symbol.content<<"]"<<endl;
+        if (symbol.is_terminal)
+            cout << symbol.id << " : [" << symbol.content << "]" << endl;
         else
-            cout<<symbol.id<<" : "<<symbol.content<<endl;
+            cout << symbol.id << " : " << symbol.content << endl;
     }
 
     for (Rule rule:rules)
@@ -39,23 +39,23 @@ Syntax::Syntax()
 
     init_first();
 
-    for(Symbol symbol:symbols)
+    for (Symbol symbol:symbols)
     {
-        cout<<symbol.content<<": ";
-        for(int symbol_firsts: symbol.first)
-            cout<<symbols[symbol_firsts].content<<' ';
-        cout<<endl;
+        cout << symbol.content << ": ";
+        for (int symbol_firsts: symbol.first)
+            cout << symbols[symbol_firsts].content << ' ';
+        cout << endl;
     }
 
     init_follow();
-    cout<<endl;
+    cout << endl;
 
-    for(Symbol symbol:symbols)
+    for (Symbol symbol:symbols)
     {
-        cout<<symbol.content<<": ";
-        for(int symbol_firsts: symbol.follow)
-            cout<<symbols[symbol_firsts].content<<' ';
-        cout<<endl;
+        cout << symbol.content << ": ";
+        for (int symbol_firsts: symbol.follow)
+            cout << symbols[symbol_firsts].content << ' ';
+        cout << endl;
     }
 }
 
@@ -95,7 +95,7 @@ void Syntax::add_rule(const string &left_symbol, const vector<string> &right_sym
     // 若map中不存在此项，则为第一次遇到此符号
     if (str_map_symbol.find(left_symbol) == str_map_symbol.end())
     {
-        Symbol* new_left = new Symbol;
+        Symbol *new_left = new Symbol;
         new_left->content = left_symbol;
         new_left->is_terminal = false;
         new_left->id = symbol_num;
@@ -118,7 +118,7 @@ void Syntax::add_rule(const string &left_symbol, const vector<string> &right_sym
         // 若map中不存在此项，则为第一次遇到此符号
         if (str_map_symbol.find(right_symbol) == str_map_symbol.end())
         {
-            Symbol* new_right = new Symbol;
+            Symbol *new_right = new Symbol;
             new_right->id = symbol_num;
             // 规定非终结符必须使用单引号注明
             if (right_symbol[0] == '\'')
@@ -193,7 +193,7 @@ void Syntax::init_first()
                             Y_iter++;
                         }
 
-                        if(Y_iter == rule.right_ids.end())
+                        if (Y_iter == rule.right_ids.end())
                         {
                             X.first.insert(epsilon_id);
                         }
@@ -211,18 +211,19 @@ void Syntax::init_first()
     bool is_updated = false;
     do
     {
-        is_updated= false;
-        for (auto back_patch_iter = back_patch.begin(); back_patch_iter!= back_patch.end(); back_patch_iter++)
+        is_updated = false;
+        for (auto back_patch_iter = back_patch.begin(); back_patch_iter != back_patch.end(); back_patch_iter++)
         {
-            for(int Y:symbols[*back_patch_iter].first)
+            for (int Y:symbols[*back_patch_iter].first)
             {
-                if(!symbols[Y].is_terminal)
+                if (!symbols[Y].is_terminal)
                 {
-                    for(int first_of_symbols : symbols[Y].first)
+                    for (int first_of_symbols : symbols[Y].first)
                     {
-                        if(first_of_symbols!=epsilon_id)
+                        if (first_of_symbols != epsilon_id)
                         {
-                            if(symbols[*back_patch_iter].first.find(first_of_symbols) == symbols[*back_patch_iter].first.end())
+                            if (symbols[*back_patch_iter].first.find(first_of_symbols) ==
+                                symbols[*back_patch_iter].first.end())
                             {
                                 is_updated = true;
                                 symbols[*back_patch_iter].first.insert(first_of_symbols);
@@ -232,19 +233,19 @@ void Syntax::init_first()
                 }
             }
         }
-    }while(is_updated);
+    } while (is_updated);
 
-    for(int back_patch_id : back_patch)
+    for (int back_patch_id : back_patch)
     {
         vector<int> delete_symbols;
-        for(int symbol_of_first : symbols[back_patch_id].first)
+        for (int symbol_of_first : symbols[back_patch_id].first)
         {
-            if(!symbols[symbol_of_first].is_terminal)
+            if (!symbols[symbol_of_first].is_terminal)
             {
                 delete_symbols.push_back(symbol_of_first);
             }
         }
-        for(int symbol_to_delete: delete_symbols)
+        for (int symbol_to_delete: delete_symbols)
             symbols[back_patch_id].first.erase(symbol_to_delete);
     }
 }
@@ -258,36 +259,42 @@ void Syntax::init_first()
  */
 set<int> Syntax::get_first(vector<int> alpha)
 {
-    vector<int> back_patch;
     set<int> first;
-
-    for(int symbol_of_first : symbols[alpha[0]].first)
+    if (alpha.size() == 1)
     {
-        if(symbols[symbol_of_first].id != epsilon_id)
+        for (int symbol_of_first : symbols[alpha[0]].first)
+            if (symbol_of_first != epsilon_id)
+                first.insert(symbol_of_first);
+        return first;
+    }
+
+    vector<int> back_patch;
+
+    for (int symbol_of_first : symbols[alpha[0]].first)
+    {
+        if (symbols[symbol_of_first].id != epsilon_id)
             first.insert(symbols[symbol_of_first].id);
     }
-    for(int symbol:alpha)
-    {
-        auto Y_iter = alpha.begin();
-        while (!symbols[(*Y_iter)].is_terminal && Y_iter != alpha.end())
-        {
-            set<int> firsts_of_Y = symbols[(*Y_iter)].first;
-            if (firsts_of_Y.find(epsilon_id) == firsts_of_Y.end())
-                break;
-            Y_iter++;
-        }
 
-        if(Y_iter == alpha.end())
+    auto Y_iter = alpha.begin();
+    while (!symbols[(*Y_iter)].is_terminal && Y_iter != alpha.end())
+    {
+        set<int> firsts_of_Y = symbols[(*Y_iter)].first;
+        if (firsts_of_Y.find(epsilon_id) == firsts_of_Y.end())
+            break;
+        Y_iter++;
+    }
+
+    if (Y_iter == alpha.end())
+    {
+        first.insert(epsilon_id);
+    }
+    else if (Y_iter != alpha.begin())
+    {
+        for (int symbol_of_first : symbols[(*Y_iter)].first)
         {
-            first.insert(epsilon_id);
-        }
-        else if (Y_iter != alpha.begin())
-        {
-            for(int symbol_of_first : symbols[(*Y_iter)].first)
-            {
-                if(symbols[symbol_of_first].id != epsilon_id)
-                    first.insert(symbols[symbol_of_first].id);
-            }
+            if (symbols[symbol_of_first].id != epsilon_id)
+                first.insert(symbols[symbol_of_first].id);
         }
     }
     return first;
@@ -303,24 +310,28 @@ set<int> Syntax::get_first(vector<int> alpha)
 */
 void Syntax::init_follow()
 {
+
+
     set<int> back_patch;
 
     symbols[start_symbol_id].follow.insert(sharp_id);
-    for(Rule rule:rules)
+    for (Rule rule:rules)
     {
         auto A_iter = rule.right_ids.begin();
-        for(; A_iter != rule.right_ids.end()-1; A_iter++)
+        for (; A_iter != rule.right_ids.end() - 1; A_iter++)
         {
-            if(!symbols[*A_iter].is_terminal)
+            if (!symbols[*A_iter].is_terminal)
             {
                 vector<int> beta;
-                for(auto beta_iter = A_iter; beta_iter != rule.right_ids.end(); beta_iter++)
+                for (auto beta_iter = A_iter + 1; beta_iter != rule.right_ids.end(); beta_iter++)
                     beta.push_back(*beta_iter);
-                for(int symbol_of_first : get_first(beta))
+
+                set<int> beta_first = get_first(beta);
+                for (int symbol_of_first : beta_first)
                     symbols[*A_iter].follow.insert(symbol_of_first);
             }
         }
-        if(!symbols[*A_iter].is_terminal)
+        if (!symbols[*A_iter].is_terminal)
         {
             back_patch.insert(*A_iter);
             symbols[*A_iter].follow.insert(rule.left_id);
@@ -330,18 +341,19 @@ void Syntax::init_follow()
     bool is_updated = false;
     do
     {
-        is_updated= false;
-        for (auto back_patch_iter = back_patch.begin(); back_patch_iter!= back_patch.end(); back_patch_iter++)
+        is_updated = false;
+        for (auto back_patch_iter = back_patch.begin(); back_patch_iter != back_patch.end(); back_patch_iter++)
         {
-            for(int Y:symbols[*back_patch_iter].follow)
+            for (int Y:symbols[*back_patch_iter].follow)
             {
-                if(!symbols[Y].is_terminal)
+                if (!symbols[Y].is_terminal)
                 {
-                    for(int follow_of_symbols : symbols[Y].follow)
+                    for (int follow_of_symbols : symbols[Y].follow)
                     {
-                        if(follow_of_symbols!=epsilon_id)
+                        if (follow_of_symbols != epsilon_id)
                         {
-                            if(symbols[*back_patch_iter].follow.find(follow_of_symbols) == symbols[*back_patch_iter].follow.end())
+                            if (symbols[*back_patch_iter].follow.find(follow_of_symbols) ==
+                                symbols[*back_patch_iter].follow.end())
                             {
                                 is_updated = true;
                                 symbols[*back_patch_iter].follow.insert(follow_of_symbols);
@@ -351,19 +363,19 @@ void Syntax::init_follow()
                 }
             }
         }
-    }while(is_updated);
+    } while (is_updated);
 
-    for(int back_patch_id : back_patch)
+    for (int back_patch_id : back_patch)
     {
         vector<int> delete_symbols;
-        for(int symbol_of_follow : symbols[back_patch_id].follow)
+        for (int symbol_of_follow : symbols[back_patch_id].follow)
         {
-            if(!symbols[symbol_of_follow].is_terminal)
+            if (!symbols[symbol_of_follow].is_terminal)
             {
                 delete_symbols.push_back(symbol_of_follow);
             }
         }
-        for(int symbol_to_delete: delete_symbols)
+        for (int symbol_to_delete: delete_symbols)
             symbols[back_patch_id].follow.erase(symbol_to_delete);
     }
 }
@@ -390,7 +402,7 @@ void Syntax::init_rules(const string &filename)
 
             while ((*line_iter)[i] != ';') // 规定一组文法规则以分号结尾
             {
-                string right_str = (*line_iter).substr(i+1);
+                string right_str = (*line_iter).substr(i + 1);
                 vector<string> right_symbols = str_split(right_str, " ");
 
                 add_rule(left_symbol, right_symbols);
@@ -401,12 +413,12 @@ void Syntax::init_rules(const string &filename)
         line_iter++;
     }
 
-    if(str_map_symbol.find(EPSILON)!= str_map_symbol.end())
+    if (str_map_symbol.find(EPSILON) != str_map_symbol.end())
         epsilon_id = str_map_symbol[EPSILON]->id;
 
-    if(str_map_symbol.find(START_SYMBOL)!= str_map_symbol.end())
+    if (str_map_symbol.find(START_SYMBOL) != str_map_symbol.end())
         start_symbol_id = str_map_symbol[START_SYMBOL]->id;
 
-    if(str_map_symbol.find(SHARP)!= str_map_symbol.end())
+    if (str_map_symbol.find(SHARP) != str_map_symbol.end())
         sharp_id = str_map_symbol[SHARP]->id;
 }
