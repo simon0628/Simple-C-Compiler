@@ -55,9 +55,6 @@ const int TAB_SPACE = 4;
 // output filenames
 const string LEXICAL_RESULT_FILE = "lexical_result.dat";
 
-// input filenames
-const string SYNTAX_RULE_FILE = "test.dat";
-
 
 bool is_letter(char ch);
 vector<string> read_file(const string &filename);

@@ -11,20 +11,25 @@
  */
 Syntax::Syntax()
 {
+    epsilon_id = add_symbol(epsilon_str);
+    sharp_id = add_symbol(sharp_str);
+
     init_rules(SYNTAX_RULE_FILE);
 
-//    map<string, int>::iterator iter;
-//    iter = str_map_symbol.begin();
-//    while (iter != str_map_symbol.end())
-//    {
-//        cout << iter->first << " : " << iter->second << endl;
-//        iter++;
-//    }
+    if (str_map_id.find(start_symbol_str) != str_map_id.end())
+    {
+        start_symbol_id = str_map_id[start_symbol_str];
+    }
+    else
+    {
+        cerr << "Undefined start symbol" << endl;
+        exit(EXIT_FAILURE);
+    }
 
     for (Symbol symbol:symbols)
     {
         if (symbol.is_terminal)
-            cout << symbol.id << " : [" << symbol.content << "]" << endl;
+            cout << symbol.id << " : \'" << symbol.content << "\'" << endl;
         else
             cout << symbol.id << " : " << symbol.content << endl;
     }
@@ -38,6 +43,7 @@ Syntax::Syntax()
     }
 
     init_first();
+    cout << endl << "First: " << endl;
 
     for (Symbol symbol:symbols)
     {
@@ -48,7 +54,7 @@ Syntax::Syntax()
     }
 
     init_follow();
-    cout << endl;
+    cout << endl << "Follow: " << endl;
 
     for (Symbol symbol:symbols)
     {
@@ -78,93 +84,24 @@ void Syntax::save_result()
 /* ------------------------ private ------------------------ */
 
 /*
- * 功能：单条文法规则构造函数
- * 说明：
- *      传入左右规则的string，将其转化为Symbol结构体
- *      由于需要建立 符号-int 的索引，需要传入map用于判断是否已经存在
+ * 功能：对所有symbol求first集
+ * 算法：
+ *（1）若X∈VT,则FIRST(X）={X}；
+ *（2）若X∈VN,且有产生式X→a…,a∈VT,则把a加入到FIRST（X）中，若有X→ε，则把ε加入FIRST(X)；
+ *（3）若X∈VN,且X→Y… ,Y∈VN, 则把
+ *                  FIRST(Y) - {ε}加到FIRST(X)中，
+ *            若X→Y1Y2 … Yk,Y1, Y2, … ,Yi-1 ∈ VN, ε∈FIRST (Yj)，则把
+ *					   (1<=j<=i-1)
+ *                  FIRST(Yi) - {ε}加到FIRST (X)中。
+ *         特别地，若ε∈FIRST(Yj) (1<=j<=k)，则 ε∈FIRST(X)
+ * (4) 反复使用以上规则, 直至 FIRST(A)不再增大为止。
  */
-void Syntax::add_rule(const string &left_symbol, const vector<string> &right_symbols)
-{
-    static int symbol_num = 0; // 符号-int索引，每个不同的符号对应一个新的int值
-
-    Rule new_rule;
-
-
-    /* ------------------ 对规则左半边的处理 ------------------ */
-
-    // 若map中不存在此项，则为第一次遇到此符号
-    if (str_map_symbol.find(left_symbol) == str_map_symbol.end())
-    {
-        Symbol *new_left = new Symbol;
-        new_left->content = left_symbol;
-        new_left->is_terminal = false;
-        new_left->id = symbol_num;
-
-        new_rule.left_id = symbol_num;
-
-        str_map_symbol[left_symbol] = new_left;
-        symbols.push_back(*new_left);
-
-        symbol_num++;
-    }
-    else
-    {
-        new_rule.left_id = str_map_symbol[left_symbol]->id;
-    }
-
-    /* ------------------ 对规则右半边的处理 ------------------ */
-    for (const string &right_symbol : right_symbols)
-    {
-        // 若map中不存在此项，则为第一次遇到此符号
-        if (str_map_symbol.find(right_symbol) == str_map_symbol.end())
-        {
-            Symbol *new_right = new Symbol;
-            new_right->id = symbol_num;
-            // 规定非终结符必须使用单引号注明
-            if (right_symbol[0] == '\'')
-            {
-                int j = 1;
-                while (right_symbol[j] != '\'' && j < right_symbol.length())
-                    j++;
-                new_right->content = right_symbol.substr(1, j - 1);
-                new_right->is_terminal = true;
-            }
-            else
-            {
-                new_right->content = right_symbol;
-                new_right->is_terminal = false;
-            }
-
-            new_rule.right_ids.push_back(symbol_num);
-
-            str_map_symbol[right_symbol] = new_right;
-            symbols.push_back(*new_right);
-
-            symbol_num++;
-        }
-        else
-        {
-            new_rule.right_ids.push_back(str_map_symbol[right_symbol]->id);
-        }
-    }
-    rules.push_back(new_rule);
-}
-
-/*
-（1）若X∈VT,则FIRST(X）={X}；
-（2）若X∈VN,且有产生式X→a…,a∈VT,则把a加入到FIRST（X）中，若有X→ε，则把ε加入FIRST(X)；
-（3）若X∈VN,且X→Y… ,Y∈VN, 则把
-                   FIRST(Y) - {ε}加到FIRST(X)中，
-             若X→Y1Y2 … Yk,Y1, Y2, … ,Yi-1 ∈ VN, ε∈FIRST (Yj)，则把
-					   (1<=j<=i-1)
-                   FIRST(Yi) - {ε}加到FIRST (X)中。
-          特别地，若ε∈FIRST(Yj) (1<=j<=k)，则 ε∈FIRST(X)
-*/
 void Syntax::init_first()
 {
     set<int> back_patch;
     for (Symbol &X:symbols)
     {
+        //（1）若X∈VT,则FIRST(X）={X}；
         if (X.is_terminal)
         {
             X.first.insert(X.id);
@@ -181,6 +118,7 @@ void Syntax::init_first()
                     }
                     else
                     {
+                        //（3）若X∈VN,且X→Y… ,Y∈VN, 则把
                         X.first.insert(rule.right_ids[0]);
                         back_patch.insert(X.id);
 
@@ -193,6 +131,7 @@ void Syntax::init_first()
                             Y_iter++;
                         }
 
+                        //（2）若X∈VN,且有产生式X→a…,a∈VT,则把a加入到FIRST（X）中，若有X→ε，则把ε加入FIRST(X)；
                         if (Y_iter == rule.right_ids.end())
                         {
                             X.first.insert(epsilon_id);
@@ -208,13 +147,14 @@ void Syntax::init_first()
         }
     }
 
+    //（4）反复使用以上规则, 直至 FIRST(A)不再增大为止。
     bool is_updated = false;
     do
     {
         is_updated = false;
-        for (auto back_patch_iter = back_patch.begin(); back_patch_iter != back_patch.end(); back_patch_iter++)
+        for (int back_patch_id : back_patch)
         {
-            for (int Y:symbols[*back_patch_iter].first)
+            for (int Y:symbols[back_patch_id].first)
             {
                 if (!symbols[Y].is_terminal)
                 {
@@ -222,11 +162,11 @@ void Syntax::init_first()
                     {
                         if (first_of_symbols != epsilon_id)
                         {
-                            if (symbols[*back_patch_iter].first.find(first_of_symbols) ==
-                                symbols[*back_patch_iter].first.end())
+                            if (symbols[back_patch_id].first.find(first_of_symbols) ==
+                                symbols[back_patch_id].first.end())
                             {
                                 is_updated = true;
-                                symbols[*back_patch_iter].first.insert(first_of_symbols);
+                                symbols[back_patch_id].first.insert(first_of_symbols);
                             }
                         }
                     }
@@ -251,11 +191,13 @@ void Syntax::init_first()
 }
 
 /*
-（1） 置 FIRST(α) = FIRST (X1) - {ε};
-（2） 若对 1<=j<= i -1,  ε∈FIRST (Xj), 则把
-    	FIRST(Xi) -{ε}加到FIRST(α)中；
-（3） 若对1<= j <=n, ε∈FIRST (Xj), 则把
-       ε加到FIRST(α)中。
+ * 功能：对一串字符alpha求first集
+ * 算法：
+ *（1） 置 FIRST(α) = FIRST (X1) - {ε};
+ *（2） 若对 1<=j<= i -1,  ε∈FIRST (Xj), 则把
+ *   	FIRST(Xi) -{ε}加到FIRST(α)中；
+ *（3） 若对1<= j <=n, ε∈FIRST (Xj), 则把
+ *      ε加到FIRST(α)中。
  */
 set<int> Syntax::get_first(vector<int> alpha)
 {
@@ -301,22 +243,25 @@ set<int> Syntax::get_first(vector<int> alpha)
 }
 
 /*
-（1）若A为文法开始符号，置#于FOLLOW(A）中；
-（2）若有产生式B→αAβ,
-	则将FIRST(β) - {ε}加到FOLLOW (A)中;
-（3）若有B→αA或B →αAβ, 且β -*-> ε
-	则将FOLLOW(B)加到FOLLOW(A)中；
-（4）反复使用以上规则, 直至 FOLLOW(A)不再增大为止。
+ * 功能：对所有symbol求follow集
+ * 算法：
+ *（1）若A为文法开始符号，置#于FOLLOW(A）中；
+ *（2）若有产生式B→αAβ,
+ *	   则将FIRST(β) - {ε}加到FOLLOW (A)中;
+ *（3）若有B→αA或B →αAβ, 且β -*-> ε
+ *	   则将FOLLOW(B)加到FOLLOW(A)中；
+ *（4）反复使用以上规则, 直至 FOLLOW(A)不再增大为止。
 */
 void Syntax::init_follow()
 {
-
-
     set<int> back_patch;
 
+    //（1）若A为文法开始符号，置#于FOLLOW(A）中；
     symbols[start_symbol_id].follow.insert(sharp_id);
     for (Rule rule:rules)
     {
+        //（2）若有产生式B→αAβ,
+        //	则将FIRST(β) - {ε}加到FOLLOW (A)中;
         auto A_iter = rule.right_ids.begin();
         for (; A_iter != rule.right_ids.end() - 1; A_iter++)
         {
@@ -331,20 +276,28 @@ void Syntax::init_follow()
                     symbols[*A_iter].follow.insert(symbol_of_first);
             }
         }
+        //（3）若有B→αA或B →αAβ, 且β -*-> ε
+        //	则将FOLLOW(B)加到FOLLOW(A)中；
         if (!symbols[*A_iter].is_terminal)
         {
             back_patch.insert(*A_iter);
             symbols[*A_iter].follow.insert(rule.left_id);
+            if (symbols[*A_iter].first.find(epsilon_id) != symbols[*A_iter].first.end())
+            {
+                back_patch.insert(*(A_iter - 1));
+                symbols[*(A_iter - 1)].follow.insert(rule.left_id);
+            }
         }
     }
 
+    //（4）反复使用以上规则, 直至 FOLLOW(A)不再增大为止。
     bool is_updated = false;
     do
     {
         is_updated = false;
-        for (auto back_patch_iter = back_patch.begin(); back_patch_iter != back_patch.end(); back_patch_iter++)
+        for (int back_patch_id : back_patch)
         {
-            for (int Y:symbols[*back_patch_iter].follow)
+            for (int Y:symbols[back_patch_id].follow)
             {
                 if (!symbols[Y].is_terminal)
                 {
@@ -352,11 +305,11 @@ void Syntax::init_follow()
                     {
                         if (follow_of_symbols != epsilon_id)
                         {
-                            if (symbols[*back_patch_iter].follow.find(follow_of_symbols) ==
-                                symbols[*back_patch_iter].follow.end())
+                            if (symbols[back_patch_id].follow.find(follow_of_symbols) ==
+                                symbols[back_patch_id].follow.end())
                             {
                                 is_updated = true;
-                                symbols[*back_patch_iter].follow.insert(follow_of_symbols);
+                                symbols[back_patch_id].follow.insert(follow_of_symbols);
                             }
                         }
                     }
@@ -377,6 +330,75 @@ void Syntax::init_follow()
         }
         for (int symbol_to_delete: delete_symbols)
             symbols[back_patch_id].follow.erase(symbol_to_delete);
+    }
+}
+
+
+/*
+ * 功能：单条规则构造函数
+ * 说明：传入左右规则的string，将其转化为Rule结构体
+ */
+void Syntax::add_rule(const string &left_symbol, const vector<string> &right_symbols)
+{
+
+    Rule new_rule;
+
+    /* ------------------ 规则左边的处理 ------------------ */
+
+    new_rule.left_id = add_symbol(left_symbol);
+
+    /* ------------------ 规则右边的处理 ------------------ */
+    for (const string &right_symbol : right_symbols)
+    {
+        new_rule.right_ids.push_back(add_symbol(right_symbol));
+    }
+    rules.push_back(new_rule);
+}
+
+/*
+ * 功能：添加一个新的符号
+ * 说明：由于需要建立<符号,int>的索引，需要传入map用于判断此符号是否已经存在
+ * 返回：此符号在索引表中的id
+ */
+SymbolID Syntax::add_symbol(const string &symbol_str)
+{
+    static int symbol_num = 0; // 符号-int索引，每个不同的符号对应一个新的int值
+
+
+    bool is_terminal;
+    string content;
+
+    // 规定非终结符必须使用单引号注明
+    if (symbol_str[0] == '\'')
+    {
+        int i = 1;
+        while (symbol_str[i] != '\'' && i < symbol_str.length())
+            i++;
+        content = symbol_str.substr(1, i - 1);
+        is_terminal = true;
+    }
+    else
+    {
+        content = symbol_str;
+        is_terminal = false;
+    }
+
+    // 若map中不存在此项，则为第一次遇到此符号
+    if (str_map_id.find(content) == str_map_id.end())
+    {
+        Symbol new_symbol;
+        str_map_id[content] = symbol_num;
+
+        new_symbol.content = content;
+        new_symbol.is_terminal = is_terminal;
+        new_symbol.id = symbol_num++;
+        symbols.push_back(new_symbol);
+
+        return new_symbol.id;
+    }
+    else
+    {
+        return str_map_id[content];
     }
 }
 
@@ -412,13 +434,4 @@ void Syntax::init_rules(const string &filename)
         }
         line_iter++;
     }
-
-    if (str_map_symbol.find(EPSILON) != str_map_symbol.end())
-        epsilon_id = str_map_symbol[EPSILON]->id;
-
-    if (str_map_symbol.find(START_SYMBOL) != str_map_symbol.end())
-        start_symbol_id = str_map_symbol[START_SYMBOL]->id;
-
-    if (str_map_symbol.find(SHARP) != str_map_symbol.end())
-        sharp_id = str_map_symbol[SHARP]->id;
 }
