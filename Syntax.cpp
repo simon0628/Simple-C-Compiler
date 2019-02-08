@@ -26,6 +26,10 @@ Syntax::Syntax()
         exit(EXIT_FAILURE);
     }
 
+    init_first();
+    init_follow();
+    init_DFA();
+
     for (Symbol symbol:symbols)
     {
         if (symbol.is_terminal)
@@ -33,36 +37,35 @@ Syntax::Syntax()
         else
             cout << symbol.id << " : " << symbol.content << endl;
     }
+//
+//    for (Rule rule:rules)
+//    {
+//        cout << rule.left_id << " -> ";
+//        for (int right_symbol:rule.right_ids)
+//            cout << right_symbol << ' ';
+//        cout << endl;
+//    }
 
-    for (Rule rule:rules)
-    {
-        cout << rule.left_id << " -> ";
-        for (int right_symbol:rule.right_ids)
-            cout << right_symbol << ' ';
-        cout << endl;
-    }
 
-    init_first();
-    cout << endl << "First: " << endl;
-
-    for (Symbol symbol:symbols)
-    {
-        cout << symbol.content << ": ";
-        for (int symbol_firsts: symbol.first)
-            cout << symbols[symbol_firsts].content << ' ';
-        cout << endl;
-    }
-
-    init_follow();
-    cout << endl << "Follow: " << endl;
-
-    for (Symbol symbol:symbols)
-    {
-        cout << symbol.content << ": ";
-        for (int symbol_firsts: symbol.follow)
-            cout << symbols[symbol_firsts].content << ' ';
-        cout << endl;
-    }
+//    cout << endl << "First: " << endl;
+//
+//    for (Symbol symbol:symbols)
+//    {
+//        cout << symbol.content << ": ";
+//        for (int symbol_firsts: symbol.first)
+//            cout << symbols[symbol_firsts].content << ' ';
+//        cout << endl;
+//    }
+//
+//    cout << endl << "Follow: " << endl;
+//
+//    for (Symbol symbol:symbols)
+//    {
+//        cout << symbol.content << ": ";
+//        for (int symbol_firsts: symbol.follow)
+//            cout << symbols[symbol_firsts].content << ' ';
+//        cout << endl;
+//    }
 }
 
 Syntax::~Syntax()
@@ -333,6 +336,90 @@ void Syntax::init_follow()
     }
 }
 
+/*
+  1.  I的任何项目都属于CLOSURE(I)；
+  2.  若A→aplha·Bbeta属于CLOSURE(I)，那么，对任何关于B的产生式B→beta，项目B→·beta也属于CLOSURE(I)；
+  3.  重复执行上述两步骤直至CLOSURE(I) 不再增大为止。
+*/
+set<Item> Syntax::get_closure(set<Item> I)
+{
+    set<Item> closure;
+    bool is_updated = false;
+    do
+    {
+        is_updated = false;
+        for (Item item:I)
+        {
+            int B = item.rule.right_ids[item.dot];
+            if (!symbols[B].is_terminal)
+            {
+                for (Rule rule:rules)
+                {
+                    if (rule.left_id == B)
+                    {
+                        Item temp;
+                        temp.rule = rule;
+                        temp.dot = 0;
+                        closure.insert(temp);
+
+                        is_updated = true;
+                    }
+                }
+            }
+        }
+    }while(is_updated);
+
+    return closure;
+}
+
+void Syntax::init_DFA()
+{
+    for (Rule rule:rules)
+    {
+        Item item;
+        item.rule = rule;
+        for (int dot_loc = 0; dot_loc < rule.right_ids.size() + 1; dot_loc++)
+        {
+            item.dot = dot_loc;
+            items.insert(item);
+        }
+    }
+    for (Item item:items)
+    {
+        cout << item.rule.left_id << " -> ";
+        for (int j = 0; j < item.rule.right_ids.size(); j++)
+        {
+            if (j == item.dot)
+                cout << '.';
+            else
+                cout << ' ';
+            cout << item.rule.right_ids[j];
+        }
+        cout << endl;
+    }
+
+
+    for (Item item:items)
+    {
+        set<Item> itemset;
+        itemset.insert(item);
+
+        int B = item.rule.right_ids[item.dot];
+        if (!symbols[B].is_terminal)
+        {
+            for (Rule rule:rules)
+            {
+                if (rule.left_id == B)
+                {
+                    Item temp;
+                    temp.rule = rule;
+                    temp.dot = 0;
+                    itemset.insert(temp);
+                }
+            }
+        }
+    }
+}
 
 /*
  * 功能：单条规则构造函数
@@ -360,7 +447,7 @@ void Syntax::add_rule(const string &left_symbol, const vector<string> &right_sym
  * 说明：由于需要建立<符号,int>的索引，需要传入map用于判断此符号是否已经存在
  * 返回：此符号在索引表中的id
  */
-SymbolID Syntax::add_symbol(const string &symbol_str)
+symbol_id Syntax::add_symbol(const string &symbol_str)
 {
     static int symbol_num = 0; // 符号-int索引，每个不同的符号对应一个新的int值
 

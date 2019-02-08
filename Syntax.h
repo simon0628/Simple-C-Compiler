@@ -8,7 +8,7 @@
 #endif //TEST_GRAMMAR_H
 
 #include "common.h"
-typedef int SymbolID;
+typedef int symbol_id;
 
 /* ------------------------ 文法规则 ------------------------ */
 
@@ -22,26 +22,27 @@ const string sharp_str = "\'#\'";
 
 struct Symbol           // 文法符号
 {
-    SymbolID id;             // 符号对应的序号，在分析过程中只使用序号，不考虑string
+    symbol_id id;       // 符号对应的序号，在分析过程中只使用序号，不考虑string
     string content;     // 保存string用于输出
     bool is_terminal;   // 是否为终结符
-    set<SymbolID> first;
-    set<SymbolID> follow;
+    set<symbol_id> first;
+    set<symbol_id> follow;
 };
 
 struct Rule              // 单条文法规则
 {
-    SymbolID left_id;
-    vector<SymbolID> right_ids;
+    symbol_id left_id;
+    vector<symbol_id> right_ids;
 };
 
 /* ------------------------ 预测分析表 ------------------------ */
 
-struct item
+struct Item
 {
-    Rule *rule_ptr;
+    Rule rule;
     int dot;
 };
+
 enum table_type{        // 预测分析表项的类型
     shift = 0,
     reduce,
@@ -62,7 +63,11 @@ class Syntax
 private:
     vector<Rule> rules;
     vector<Symbol> symbols;
-    map<string, SymbolID> str_map_id;
+    map<string, symbol_id> str_map_id;
+
+    set<Item> items;
+
+    vector<set<Item>> DFA;
 
     int epsilon_id;
     int start_symbol_id;
@@ -71,11 +76,14 @@ private:
     int **table;
 
     void add_rule(const string &left_symbol, const vector<string> &right_symbols);
-    SymbolID add_symbol(const string &symbol_str);
+    symbol_id add_symbol(const string &symbol_str);
     void init_rules(const string &filename);
     void init_first();
     set<int> get_first(const vector<int> alpha);
     void init_follow();
+
+    set<Item> get_closure(set<Item> I);
+    void init_DFA();
 
 
 public:
