@@ -12,7 +12,7 @@ typedef int symbol_id;
 
 /* ------------------------ 文法规则 ------------------------ */
 
-const string SYNTAX_RULE_FILE = "test.dat";
+const string SYNTAX_RULE_FILE = "../data_files/test.dat";
 
 //const string start_symbol_str = "translation_unit";
 const string start_symbol_str = "E";
@@ -42,7 +42,14 @@ struct Item
     Rule rule;
     int dot;
 };
-
+//inline bool operator<(const foo& lhs, const foo& rhs)
+//{
+//    return lhs.key < rhs.key;
+//}
+inline bool operator<(const Item _x, const Item _y)
+{
+    return _x.rule.right_ids<_y.rule.right_ids;
+}
 enum table_type{        // 预测分析表项的类型
     shift = 0,
     reduce,
@@ -83,6 +90,8 @@ private:
     void init_follow();
 
     set<Item> get_closure(set<Item> I);
+
+
     void init_DFA();
 
 
