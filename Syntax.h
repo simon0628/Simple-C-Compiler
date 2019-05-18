@@ -12,7 +12,7 @@ typedef int symbol_id;
 
 /* ------------------------ 文法规则 ------------------------ */
 
-const string SYNTAX_RULE_FILE = "../data_files/test.dat";
+const string SYNTAX_RULE_FILE = "../data_files/easy_test2.dat";
 
 //const string start_symbol_str = "translation_unit";
 const string start_symbol_str = "E";
@@ -72,7 +72,7 @@ private:
     vector<Symbol> symbols;
     map<string, symbol_id> str_map_id;
 
-    set<Item> items;
+    vector<Item> items;
 
     vector<set<Item>> DFA;
 
@@ -89,7 +89,8 @@ private:
     set<int> get_first(const vector<int> alpha);
     void init_follow();
 
-    set<Item> get_closure(set<Item> I);
+    int find_item(int dot, Rule rule);
+    set<int> get_closure(set<int> I);
 
 
     void init_DFA();

@@ -28,15 +28,17 @@ Syntax::Syntax()
 
     init_first();
     init_follow();
+
     init_DFA();
 
-    for (Symbol symbol:symbols)
-    {
-        if (symbol.is_terminal)
-            cout << symbol.id << " : \'" << symbol.content << "\'" << endl;
-        else
-            cout << symbol.id << " : " << symbol.content << endl;
-    }
+//    for (Symbol symbol:symbols)
+//    {
+//        if (symbol.is_terminal)
+//            cout << symbol.id << " : \'" << symbol.content << "\'" << endl;
+//        else
+//            cout << symbol.id << " : " << symbol.content << endl;
+//    }
+
 //
 //    for (Rule rule:rules)
 //    {
@@ -341,15 +343,17 @@ void Syntax::init_follow()
   2.  若A→aplha·Bbeta属于CLOSURE(I)，那么，对任何关于B的产生式B→beta，项目B→·beta也属于CLOSURE(I)；
   3.  重复执行上述两步骤直至CLOSURE(I) 不再增大为止。
 */
-set<Item> Syntax::get_closure(set<Item> I)
+set<int> Syntax::get_closure(set<int> I)
 {
-    set<Item> closure;
+    set<int> closure = I;
+
     bool is_updated = false;
     do
     {
         is_updated = false;
-        for (Item item:I)
+        for (int item_id:I)
         {
+            Item item = items[item_id];
             int B = item.rule.right_ids[item.dot];
             if (!symbols[B].is_terminal)
             {
@@ -357,12 +361,12 @@ set<Item> Syntax::get_closure(set<Item> I)
                 {
                     if (rule.left_id == B)
                     {
-                        Item temp;
-                        temp.rule = rule;
-                        temp.dot = 0;
-                        closure.insert(temp);
-
-                        is_updated = true;
+                        int item_loc = find_item(0, rule);
+                        if(item_loc != -1)
+                        {
+                            if(closure.insert(item_loc).second == true)
+                                is_updated = true;
+                        }
                     }
                 }
             }
@@ -370,6 +374,30 @@ set<Item> Syntax::get_closure(set<Item> I)
     }while(is_updated);
 
     return closure;
+}
+
+int Syntax::find_item(int dot, Rule rule)
+{
+    bool match = false;
+    for(int i = 0; i < items.size(); i++)
+    {
+        Item item = items[i];
+        if(item.rule.left_id == rule.left_id && item.dot == dot)
+        {
+            match = true;
+            for(int j = 0; j < rule.right_ids.size() && j < item.rule.right_ids.size(); j++)
+            {
+                if(rule.right_ids[j] != item.rule.right_ids[j])
+                {
+                    match = false;
+                    break;
+                }
+            }
+            if(match)
+                return i;
+        }
+    }
+    return -1;
 }
 
 void Syntax::init_DFA()
@@ -381,44 +409,64 @@ void Syntax::init_DFA()
         for (int dot_loc = 0; dot_loc < rule.right_ids.size() + 1; dot_loc++)
         {
             item.dot = dot_loc;
-            items.insert(item);
+            items.push_back(item);
         }
     }
-    for (Item item:items)
+//
+//    for (Item item:items)
+//    {
+//        cout << item.rule.left_id << " -> ";
+//        for (int j = 0; j < item.rule.right_ids.size(); j++)
+//        {
+//            if (j == item.dot)
+//                cout << '.';
+//            else
+//                cout << ' ';
+//            cout << item.rule.right_ids[j];
+//        }
+//        cout << endl;
+//    }
+
+    set<int> t;
+    t.insert(0);
+
+    set<int> r = get_closure(t);
+    for( int i : r)
     {
-        cout << item.rule.left_id << " -> ";
+        Item item = items[i];
+        cout << symbols[item.rule.left_id].content << " -> ";
         for (int j = 0; j < item.rule.right_ids.size(); j++)
         {
             if (j == item.dot)
                 cout << '.';
             else
                 cout << ' ';
-            cout << item.rule.right_ids[j];
+            cout << symbols[item.rule.right_ids[j]].content;
         }
         cout << endl;
     }
 
 
-    for (Item item:items)
-    {
-        set<Item> itemset;
-        itemset.insert(item);
-
-        int B = item.rule.right_ids[item.dot];
-        if (!symbols[B].is_terminal)
-        {
-            for (Rule rule:rules)
-            {
-                if (rule.left_id == B)
-                {
-                    Item temp;
-                    temp.rule = rule;
-                    temp.dot = 0;
-                    itemset.insert(temp);
-                }
-            }
-        }
-    }
+//    for (Item item:items)
+//    {
+//        set<Item> itemset;
+//        itemset.insert(item);
+//
+//        int B = item.rule.right_ids[item.dot];
+//        if (!symbols[B].is_terminal)
+//        {
+//            for (Rule rule:rules)
+//            {
+//                if (rule.left_id == B)
+//                {
+//                    Item temp;
+//                    temp.rule = rule;
+//                    temp.dot = 0;
+//                    itemset.insert(temp);
+//                }
+//            }
+//        }
+//    }
 }
 
 /*
