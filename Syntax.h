@@ -42,14 +42,11 @@ struct Item
     Rule rule;
     int dot;
 };
-//inline bool operator<(const foo& lhs, const foo& rhs)
-//{
-//    return lhs.key < rhs.key;
-//}
-inline bool operator<(const Item _x, const Item _y)
-{
-    return _x.rule.right_ids<_y.rule.right_ids;
-}
+
+
+typedef set<int> ItemSet;
+typedef set<int> RuleSet;
+
 enum table_type{        // 预测分析表项的类型
     shift = 0,
     reduce,
@@ -68,13 +65,13 @@ struct Table {          // 预测分析表表项
 class Syntax
 {
 private:
-    vector<Rule> rules;
-    vector<Symbol> symbols;
     map<string, symbol_id> str_map_id;
 
-    vector<Item> items;
+    vector<Rule> all_rules;
+    vector<Symbol> all_symbols;
+    vector<Item> all_items;
 
-    vector<set<Item>> DFA;
+    vector<ItemSet> itemsets;
 
     int epsilon_id;
     int start_symbol_id;
@@ -90,10 +87,11 @@ private:
     void init_follow();
 
     int find_item(int dot, Rule rule);
-    set<int> get_closure(set<int> I);
+    ItemSet get_closure(ItemSet I);
+    ItemSet get_go(ItemSet I, Symbol X);
 
 
-    void init_DFA();
+    void init_itemsets();
 
 
 public:
