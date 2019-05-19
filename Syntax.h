@@ -12,10 +12,11 @@ typedef int symbol_id;
 
 /* ------------------------ 文法规则 ------------------------ */
 
-const string SYNTAX_RULE_FILE = "../data_files/easy_test2.dat";
-
+//const string SYNTAX_RULE_FILE = "../data_files/syntax_rules.dat";
 //const string start_symbol_str = "translation_unit";
-const string start_symbol_str = "E";
+
+const string SYNTAX_RULE_FILE = "../data_files/easy_test2.dat";
+const string start_symbol_str = "S";
 
 const string epsilon_str = "\'$\'";
 const string sharp_str = "\'#\'";
@@ -92,6 +93,7 @@ private:
 
 
     void init_itemsets();
+    void init_table();
 
 
 public:

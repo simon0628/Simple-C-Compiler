@@ -31,7 +31,7 @@ Syntax::Syntax()
     init_follow();
 
     init_itemsets();
-
+    init_table();
 //    for (Symbol symbol:all_symbols)
 //    {
 //        if (symbol.is_terminal)
@@ -39,7 +39,7 @@ Syntax::Syntax()
 //        else
 //            cout << symbol.id << " : " << symbol.content << endl;
 //    }
-
+//
 //
 //    for (Rule rule:all_rules)
 //    {
@@ -407,6 +407,7 @@ ItemSet Syntax::get_go(ItemSet I, Symbol X)
     return p;
 }
 
+
 int Syntax::find_item(int dot, Rule rule)
 {
     bool match = false;
@@ -457,7 +458,11 @@ void Syntax::init_itemsets()
     }
 
     set<int> start_item;
-    start_item.insert(0);
+    for(int i = 0; i < all_items.size(); i++)
+    {
+        if(all_items[i].rule.left_id == start_symbol_id && all_items[i].dot == 0)
+            start_item.insert(i);
+    }
 
     itemsets.push_back(get_closure(start_item));
 
@@ -465,10 +470,11 @@ void Syntax::init_itemsets()
     do
     {
         is_updated = false;
-        for(ItemSet I : itemsets)
+
+        for(int i = 0; i < itemsets.size(); i++)
         {
             vector<Symbol> itemset_symbols;
-            for(int item_id : I)
+            for(int item_id : itemsets[i])
             {
                 Item item = all_items[item_id];
                 if(item.dot < item.rule.right_ids.size())
@@ -476,7 +482,7 @@ void Syntax::init_itemsets()
             }
             for(Symbol X : itemset_symbols)
             {
-                ItemSet temp_go = get_go(I, X);
+                ItemSet temp_go = get_go(itemsets[i], X);
                 if(temp_go.size() > 0)
                 {
                     vector<ItemSet>::iterator find_iter = std::find(itemsets.begin(), itemsets.end(), temp_go);
@@ -566,6 +572,29 @@ void Syntax::init_itemsets()
 //        }
 //    }
 }
+
+/*
+ * 分析表的ACTION和GOTO子表构造方法：
+ * 1. 若项目A→alpha·a beta属于Ik且GO(Ik, a)＝Ij，a为终结符，则置ACTION[k,a] 为“sj”。
+ * 2. 若项目A→alpha·属于Ik，那么，对任何终结符a(或结束符#)，置ACTION[k,a]为 “rj”(假定产生式A→alpha是文法G'的第j个产生式)。
+ * 3. 若项目S'→S·属于Ik，则置ACTION[k,#]为 “acc”。
+ *
+ * 4. 若GO(Ik,A)＝Ij，A为非终结符，则置GOTO[k,A]=j。
+ * 5. 分析表中凡不能用规则1至4填入信息的空白格均置上“报错标志”。
+ *
+ */
+void Syntax::init_table()
+{
+    int state_num = itemsets.size();
+    map<Symbol, int> action[state_num];
+
+    for(Item item : all_items)
+    {
+
+    }
+
+}
+
 
 /*
  * 功能：单条规则构造函数
