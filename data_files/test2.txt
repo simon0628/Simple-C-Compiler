@@ -1,29 +1,29 @@
 #include<iostream>
 using namespace std;
 
-int f(int left, int right,int a[])
+int f(int left_id, int right_ids,int a[])
 /*
-¹¦ÄÜ£º¼ÆËãÃ¿¸öÔªËØµÄÖØÊý£¬²¢Í¨¹ýµÝ¹éÕÒµ½ÖÚÊý
-Ìõ¼þ£ºÊý×éaÒÑ¾­´æÔÚ£¬ÇÒÊý×éaµÄ³¤¶È²»Îª0
-²ÎÊý£º×óÖ¸Õëleft£¬ÓÒÖ¸Õëright
+ï¿½ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½Ôªï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ï¿½Ý¹ï¿½ï¿½Òµï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½aï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ú£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½aï¿½Ä³ï¿½ï¿½È²ï¿½Îª0
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½left_idï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½right_ids
 */
 {
 	int middle;
 	int count=1;
 	int H, L;
-	middle = (left + right) / 2;
+	middle = (left_id + right_ids) / 2;
 
-	if (middle + 1 > right)H = right;
+	if (middle + 1 > right_ids)H = right_ids;
 	else{
-		for (int i = middle + 1; i <= right; i++)
+		for (int i = middle + 1; i <= right_ids; i++)
 		{
 			if (a[middle] == a[i]) {
 				count++;
-				if (i == right)H = right;
+				if (i == right_ids)H = right_ids;
 			}
 			if (a[middle] != a[i]) {
 				H = i - 1; break;
 			}
 		}
-	}//ÏòÓÒ¼ÆËãa[middle]µÄÖØÊý
+	}//ï¿½ï¿½ï¿½Ò¼ï¿½ï¿½ï¿½a[middle]ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 $

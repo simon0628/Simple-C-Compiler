@@ -269,6 +269,10 @@ jump_statement
          | RETURN expression ';'
          ;
 
+S
+         : translation_unit
+         ;
+
 translation_unit
          : external_declaration
          | translation_unit external_declaration

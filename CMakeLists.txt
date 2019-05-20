@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
-project(test)
+project(compiler)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(test main.cpp Analyze.cpp Lexical.cpp common.cpp Syntax.cpp)
+add_executable(compiler main.cpp Analyze.cpp Lexical.cpp common.cpp Syntax.cpp)

@@ -3,6 +3,7 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <set>
 
 #include <iostream>
 #include <fstream>
@@ -13,6 +14,7 @@ using std::vector;
 using std::string;
 using std::list;
 using std::map;
+using std::set;
 
 using std::cin;
 using std::cout;
@@ -53,13 +55,10 @@ const int TAB_SPACE = 4;
 // output filenames
 const string LEXICAL_RESULT_FILE = "lexical_result.dat";
 
-// input filenames
-const string SYNTAX_RULE_FILE = "rules.dat";
-
 
 bool is_letter(char ch);
-vector<string> read_file(const string filename);
-Status write_file(const string filename, vector<string> lines);
+vector<string> read_file(const string &filename);
+Status write_file(const string &filename, vector<string> lines);
 vector<string> str_split(const string &s, const string &seperator);
 
 //class Lexical;
