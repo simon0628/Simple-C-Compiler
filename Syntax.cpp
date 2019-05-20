@@ -478,7 +478,7 @@ void Syntax::init_itemsets()
             {
                 Item item = all_items[item_id];
                 if(item.dot < item.rule.right_ids.size())
-                itemset_symbols.push_back(all_symbols[item.rule.right_ids[item.dot]]);
+                    itemset_symbols.push_back(all_symbols[item.rule.right_ids[item.dot]]);
             }
             for(Symbol X : itemset_symbols)
             {
@@ -586,11 +586,62 @@ void Syntax::init_itemsets()
 void Syntax::init_table()
 {
     int state_num = itemsets.size();
-    map<Symbol, int> action[state_num];
+    map<Symbol, ActionElem> action[state_num];
 
-    for(Item item : all_items)
+    set<int> start_item;
+    for(int i = 0; i < all_items.size(); i++)
     {
+        if(all_items[i].rule.left_id == start_symbol_id && all_items[i].dot == 0)
+            start_item.insert(i);
+    }
 
+
+    for(int k = 0; k < itemsets.size(); k++)
+    {
+        for(int item_id: itemsets[k])
+        {
+            Item item = all_items[item_id];
+
+            // 1. 若项目A→alpha·a beta属于Ik且GO(Ik, a)＝Ij，a为终结符，则置ACTION[k,a] 为“sj”。
+            if(item.dot < item.rule.right_ids.size())
+            {
+                Symbol a = all_symbols[item.rule.right_ids[item.dot]];
+                if (a.is_terminal)
+                {
+                    ItemSet Ij = get_go(itemsets[k], a);
+
+                    vector<ItemSet>::iterator find_iter = std::find(itemsets.begin(), itemsets.end(), Ij);
+                    if (find_iter != itemsets.end())
+                    {
+                        int j = find_iter - itemsets.begin();
+                        action[k][a] = {shift, j};
+                    }
+                }
+            }
+
+
+            // 2. 若项目A→alpha·属于Ik，那么，对任何终结符a(或结束符#)，置ACTION[k,a]为 “rj”(假定产生式A→alpha是文法G'的第j个产生式)。
+            else if(item.dot == item.rule.right_ids.size())
+            {
+                for(Symbol a: all_symbols)
+                {
+                    if(!a.is_terminal)
+                    {
+                        vector<Rule>::iterator find_iter = std::find(all_rules.begin(), all_rules.end(), item.rule);
+                        if(find_iter != all_rules.end())
+                        {
+                            int j = find_iter - all_rules.begin();
+                            action[k][a] = {reduce, j};
+                        }
+                    }
+                }
+            }
+
+            // 3. 若项目S'→S·属于Ik，则置ACTION[k,#]为 “acc”。
+
+
+
+        }
     }
 
 }

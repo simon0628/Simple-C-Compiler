@@ -12,10 +12,10 @@ typedef int symbol_id;
 
 /* ------------------------ 文法规则 ------------------------ */
 
-//const string SYNTAX_RULE_FILE = "../data_files/syntax_rules.dat";
+const string SYNTAX_RULE_FILE = "../data_files/syntax_rules.dat";
 //const string start_symbol_str = "translation_unit";
 
-const string SYNTAX_RULE_FILE = "../data_files/easy_test2.dat";
+//const string SYNTAX_RULE_FILE = "../data_files/easy_test2.dat";
 const string start_symbol_str = "S";
 
 const string epsilon_str = "\'$\'";
@@ -29,6 +29,11 @@ struct Symbol           // 文法符号
     set<symbol_id> first;
     set<symbol_id> follow;
 };
+
+inline bool operator<(const Symbol _x, const Symbol _y)
+{
+    return _x.id<_y.id;
+}
 
 struct Rule              // 单条文法规则
 {
@@ -45,20 +50,21 @@ struct Item
 };
 
 
-typedef set<int> ItemSet;
-typedef set<int> RuleSet;
-
-enum table_type{        // 预测分析表项的类型
+enum action_type{        // 预测分析表项的类型
     shift = 0,
     reduce,
     acc,
     t_goto,
 };
-
-struct Table {          // 预测分析表表项
-    table_type type;
+struct ActionElem
+{
+    action_type type;
     int value;
 };
+
+typedef set<int> ItemSet;
+typedef set<int> RuleSet;
+
 
 
 /* ------------------------ Syntax ------------------------ */
